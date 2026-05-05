@@ -1,9 +1,11 @@
 import argparse
 import csv
 from pathlib import Path
-from typing import Iterable, Tuple
+from typing import Iterable, Sequence, Tuple
 
+import joblib
 import numpy as np
+from scipy.signal import butter, filtfilt
 
 
 def parse_args() -> argparse.Namespace:
@@ -60,55 +62,63 @@ def load_test_data(data_path: Path) -> Tuple[np.ndarray, np.ndarray]:
     return x, ids.astype(np.int64)
 
 
-def load_checkpoint(checkpoint_path: Path):
-    """
-    TODO(student):
-    Load your own checkpoint format here.
+def design_filters(
+    bands: Sequence[Tuple[float, float]], sfreq: float, order: int
+) -> list:
+    nyq = sfreq / 2.0
+    filters = []
+    for low, high in bands:
+        wn = (low / nyq, high / nyq)
+        if not (0.0 < wn[0] < wn[1] < 1.0):
+            raise ValueError(
+                f"Band {low}-{high} Hz invalid for sfreq={sfreq} Hz; "
+                f"normalized cutoffs were {wn}."
+            )
+        b, a = butter(order, wn, btype="bandpass")
+        filters.append((b, a))
+    return filters
 
-    Examples:
-    - torch.load(checkpoint_path, map_location="cpu")
-    - joblib.load(checkpoint_path)
-    - pickle.load(...)
-    """
-    raise NotImplementedError("TODO: load your checkpoint")
+
+def extract_log_variance(x: np.ndarray, filters) -> np.ndarray:
+    parts = []
+    for b, a in filters:
+        filtered = filtfilt(b, a, x, axis=-1)
+        var = np.maximum(np.var(filtered, axis=-1), 1e-10)
+        parts.append(np.log(var))
+    return np.concatenate(parts, axis=1).astype(np.float64)
+
+
+def load_checkpoint(checkpoint_path: Path):
+    return joblib.load(checkpoint_path)
 
 
 def preprocess_for_inference(x: np.ndarray, checkpoint) -> np.ndarray:
-    """
-    TODO(student):
-    Reproduce the preprocessing used during Task 2 training.
+    x = np.asarray(x, dtype=np.float64)
+    if x.ndim != 3:
+        raise ValueError(f"Expected x with shape (N, C, T), got {x.shape}")
 
-    Expected input:
-    - x shape: (N, C, T)
+    expected_channels = checkpoint.get("n_channels")
+    if expected_channels is not None and x.shape[1] != expected_channels:
+        raise ValueError(
+            f"Channel count mismatch: checkpoint expects {expected_channels}, "
+            f"got {x.shape[1]}"
+        )
 
-    Expected output:
-    - preprocessed array in the shape your model expects
-    """
-    _ = checkpoint
-    raise NotImplementedError("TODO: implement inference preprocessing")
+    filters = design_filters(
+        checkpoint["bands"], checkpoint["sfreq"], checkpoint["filter_order"]
+    )
+    feats = extract_log_variance(x, filters)
+    return checkpoint["scaler"].transform(feats)
 
 
 def build_model(checkpoint):
-    """
-    TODO(student):
-    Rebuild your model from the checkpoint metadata.
-    """
-    _ = checkpoint
-    raise NotImplementedError("TODO: rebuild your model")
+    return checkpoint["model"]
 
 
 def predict(model, x: np.ndarray) -> np.ndarray:
-    """
-    TODO(student):
-    Run inference and return integer labels.
-
-    Required return:
-    - shape: (N,)
-    - dtype/content: integers in {0, 1, 2, 3}
-    """
-    _ = model
-    _ = x
-    raise NotImplementedError("TODO: generate predictions")
+    pred = model.predict(x)
+    pred = np.asarray(pred).astype(np.int64)
+    return pred
 
 
 def validate_predictions(pred: np.ndarray, num_examples: int) -> np.ndarray:

@@ -1,0 +1,1 @@
+python train.py --data data/train --output-dir outputs/task2_train --checkpoint outputs/task2_train/task2_model.pkl --sfreq 250 --filter-order 4 --C 1.0 --max-iter 2000 --seed 42
