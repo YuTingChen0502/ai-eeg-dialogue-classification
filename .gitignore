@@ -1,0 +1,153 @@
+# ============================================================
+# Intro to AI HW3 Project
+# Keep source code, notebooks, docs, and specs.
+# Ignore datasets, generated outputs, model artifacts, caches,
+# local environments, and editor/AI-tool states.
+# ============================================================
+
+
+# ============================================================
+# 1. Dataset files
+# ============================================================
+# Dataset directories may appear under:
+# - part1/task1/data/
+# - part1/task2/data/
+# - part2/data/
+# - root data/
+**/data/
+
+# EEG dataset files
+*.npz
+
+# Dialogue dataset files and Kaggle outputs
+# This intentionally ignores train.csv, test.csv, submission.csv, solution.csv, etc.
+*.csv
+
+
+# ============================================================
+# 2. Model checkpoints / trained artifacts
+# ============================================================
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.pickle
+*.joblib
+*.model
+*.bin
+*.safetensors
+
+# Common training output folders
+**/outputs/
+**/checkpoints/
+**/runs/
+**/wandb/
+**/lightning_logs/
+**/mlruns/
+**/logs/
+
+# Common generated prediction files
+submission.*
+solution.*
+predictions.*
+predict.*
+results.*
+
+
+# ============================================================
+# 3. Python / Jupyter cache
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.ruff_cache/
+.cache/
+
+# Coverage / test artifacts
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+*.py.cover
+
+
+# ============================================================
+# 4. Virtual environments / local dependency folders
+# ============================================================
+.env
+.envrc
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+__pypackages__/
+
+# Package / build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+pip-wheel-metadata/
+wheels/
+site/
+
+
+# ============================================================
+# 5. Editor / IDE / AI assistant local state
+# ============================================================
+.vscode/
+.idea/
+.cursor/
+.claude/
+.aider/
+.continue/
+
+# Code runner temp files
+tempCodeRunnerFile.py
+
+
+# ============================================================
+# 6. OS generated files
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# ============================================================
+# 7. Logs and temporary files
+# ============================================================
+*.log
+*.out
+*.err
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+
+# ============================================================
+# 8. Assignment packaging artifacts
+# ============================================================
+# Final code archive should be generated for submission, not tracked.
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# Usually do not track generated report PDFs.
+# Keep markdown docs/specs in docs/.
+*.pdf
+
+# If you decide to keep the final report PDF in GitHub, force-add it manually:
+# git add -f 515512_GroupXX_HW3_report.pdf
