@@ -22,6 +22,7 @@ from sklearn.model_selection import StratifiedKFold, train_test_split
 
 TEXT_COL_CANDIDATES = ("text", "content", "utterance", "sentence")
 CLASSICAL_TUNED_BASELINE = "0.8805 +/- 0.0262"
+BERT_HOLDOUT_BASELINE = 0.9329
 
 
 def require_transformer_deps():
@@ -66,6 +67,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--valid-size", type=float, default=0.2)
     parser.add_argument("--k-folds", type=int, default=0, help="Optional Stratified K-Fold CV. 0 disables CV.")
+    parser.add_argument("--threshold-tune", action="store_true", help="Tune the positive-class probability threshold on validation data.")
+    parser.add_argument("--threshold-min", type=float, default=0.30)
+    parser.add_argument("--threshold-max", type=float, default=0.70)
+    parser.add_argument("--threshold-step", type=float, default=0.01)
+    parser.add_argument("--multi-seed", action="store_true", help="Train multiple holdout models and average test probabilities.")
+    parser.add_argument("--multi-seeds", default="13,42,2026", help="Comma-separated seeds used when --multi-seed is enabled.")
     parser.add_argument("--debug", action="store_true", help="Run a tiny end-to-end smoke test.")
     return parser.parse_args()
 
@@ -186,6 +193,52 @@ def predict(model, dataloader, device, torch_module) -> tuple[np.ndarray, np.nda
     return np.concatenate(preds), np.concatenate(probs)
 
 
+def parse_seed_list(seed_text: str) -> list[int]:
+    seeds = []
+    for part in seed_text.split(","):
+        part = part.strip()
+        if part:
+            seeds.append(int(part))
+    if not seeds:
+        raise ValueError("--multi-seeds must contain at least one integer seed.")
+    return seeds
+
+
+def labels_from_probs(probs: np.ndarray, threshold: float) -> np.ndarray:
+    return (np.asarray(probs) >= threshold).astype(int)
+
+
+def tune_threshold(
+    y_true: np.ndarray,
+    probs: np.ndarray,
+    *,
+    threshold_min: float,
+    threshold_max: float,
+    threshold_step: float,
+) -> tuple[float, float]:
+    thresholds = np.arange(threshold_min, threshold_max + threshold_step / 2.0, threshold_step)
+    best_threshold = 0.5
+    best_f1 = -1.0
+    for threshold in thresholds:
+        pred = labels_from_probs(probs, float(threshold))
+        macro_f1 = f1_score(y_true, pred, average="macro")
+        if macro_f1 > best_f1:
+            best_f1 = float(macro_f1)
+            best_threshold = float(threshold)
+    return best_threshold, best_f1
+
+
+def write_submission(path: Path, test_df: pd.DataFrame, labels: np.ndarray) -> pd.DataFrame:
+    submission = pd.DataFrame({"id": test_df["id"].values, "label": labels.astype(int)})
+    path.parent.mkdir(parents=True, exist_ok=True)
+    submission.to_csv(path, index=False)
+    return validate_submission(path, test_df)
+
+
+def sibling_submission_path(base_path: Path, suffix: str) -> Path:
+    return base_path.with_name(f"{base_path.stem}_{suffix}{base_path.suffix}")
+
+
 def train_one_split(
     *,
     train_df: pd.DataFrame,
@@ -219,6 +272,8 @@ def train_one_split(
     best_state = None
     best_report = ""
     best_preds = None
+    best_probs = None
+    best_valid_y = valid_df["label"].to_numpy()
 
     for epoch in range(1, args.epochs + 1):
         model.train()
@@ -236,7 +291,7 @@ def train_one_split(
             total_loss += float(loss.item())
             loop.set_postfix(loss=f"{loss.item():.4f}")
 
-        valid_pred, _ = predict(model, valid_loader, device, torch)
+        valid_pred, valid_probs = predict(model, valid_loader, device, torch)
         valid_y = valid_df["label"].to_numpy()
         macro_f1 = f1_score(valid_y, valid_pred, average="macro")
         avg_loss = total_loss / max(1, len(train_loader))
@@ -245,6 +300,7 @@ def train_one_split(
         if macro_f1 > best_f1:
             best_f1 = macro_f1
             best_preds = valid_pred
+            best_probs = valid_probs
             best_report = classification_report(valid_y, valid_pred, digits=4)
             best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
 
@@ -256,7 +312,7 @@ def train_one_split(
         tokenizer.save_pretrained(args.output_dir)
         print(f"Saved best model/tokenizer to {args.output_dir}")
 
-    return model, best_f1, best_report, best_preds
+    return model, best_f1, best_report, best_preds, best_probs, best_valid_y
 
 
 def validate_submission(path: Path, test_df: pd.DataFrame) -> pd.DataFrame:
@@ -268,28 +324,132 @@ def validate_submission(path: Path, test_df: pd.DataFrame) -> pd.DataFrame:
     return sub
 
 
-def run_kfold(train_df, tokenizer, model_factory, text_dataset_cls, libs, args):
+def run_kfold(train_df, test_df, tokenizer, model_factory, text_dataset_cls, libs, args):
     if args.k_folds < 2:
         return None
     print(f"\nRunning optional {args.k_folds}-fold Stratified CV.")
+    torch = libs["torch"]
+    DataLoader = libs["DataLoader"]
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
     fold_scores = []
+    oof_y = []
+    oof_probs = []
+    test_probs = []
     for fold, (tr_idx, va_idx) in enumerate(skf.split(train_df["text"], train_df["label"]), start=1):
-        _, score, _, _ = train_one_split(
+        fold_args = copy.deepcopy(args)
+        fold_args.output_dir = args.output_dir / f"fold_{fold}"
+        model, score, _, _, valid_probs, valid_y = train_one_split(
             train_df=train_df.iloc[tr_idx].reset_index(drop=True),
             valid_df=train_df.iloc[va_idx].reset_index(drop=True),
             tokenizer=tokenizer,
             model_factory=model_factory,
             text_dataset_cls=text_dataset_cls,
             libs=libs,
-            args=args,
+            args=fold_args,
             fold_name=f"fold {fold}",
             save_model=False,
         )
         fold_scores.append(score)
+        oof_y.append(valid_y)
+        oof_probs.append(valid_probs)
+
+        test_ds = text_dataset_cls(test_df["text"], None, tokenizer, args.max_length)
+        test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False)
+        _, fold_test_probs = predict(model, test_loader, device, torch)
+        test_probs.append(fold_test_probs)
         print(f"fold {fold} best val Macro-F1={score:.4f}")
     print(f"K-Fold Macro-F1 mean={np.mean(fold_scores):.4f} std={np.std(fold_scores):.4f} scores={[round(s, 4) for s in fold_scores]}")
-    return fold_scores
+    oof_y_arr = np.concatenate(oof_y)
+    oof_probs_arr = np.concatenate(oof_probs)
+    if args.threshold_tune:
+        threshold, threshold_f1 = tune_threshold(
+            oof_y_arr,
+            oof_probs_arr,
+            threshold_min=args.threshold_min,
+            threshold_max=args.threshold_max,
+            threshold_step=args.threshold_step,
+        )
+    else:
+        threshold, threshold_f1 = 0.5, f1_score(oof_y_arr, labels_from_probs(oof_probs_arr, 0.5), average="macro")
+    mean_test_probs = np.mean(test_probs, axis=0)
+    kfold_path = sibling_submission_path(args.submission_path, "kfold")
+    checked = write_submission(kfold_path, test_df, labels_from_probs(mean_test_probs, threshold))
+    print(f"K-Fold threshold={threshold:.2f} OOF Macro-F1={threshold_f1:.4f}")
+    print(f"K-Fold submission saved: {kfold_path}")
+    print(f"K-Fold prediction distribution: {checked['label'].value_counts().sort_index().to_dict()}")
+    return {
+        "scores": fold_scores,
+        "threshold": threshold,
+        "threshold_f1": threshold_f1,
+        "submission_path": kfold_path,
+    }
+
+
+def train_holdout_and_predict(
+    *,
+    train_df: pd.DataFrame,
+    test_df: pd.DataFrame,
+    tokenizer,
+    model_factory,
+    text_dataset_cls,
+    libs: dict,
+    args: argparse.Namespace,
+    seed: int,
+    save_model: bool,
+    fold_name: str,
+):
+    torch = libs["torch"]
+    DataLoader = libs["DataLoader"]
+    set_seed(seed, torch)
+    train_split, valid_split = train_test_split(
+        train_df,
+        test_size=args.valid_size,
+        random_state=seed,
+        stratify=train_df["label"],
+    )
+    train_split = train_split.reset_index(drop=True)
+    valid_split = valid_split.reset_index(drop=True)
+    print(f"\n{fold_name}: train={len(train_split)} valid={len(valid_split)} seed={seed}")
+    model, best_f1, report, valid_pred, valid_probs, valid_y = train_one_split(
+        train_df=train_split,
+        valid_df=valid_split,
+        tokenizer=tokenizer,
+        model_factory=model_factory,
+        text_dataset_cls=text_dataset_cls,
+        libs=libs,
+        args=args,
+        fold_name=fold_name,
+        save_model=save_model,
+    )
+    default_threshold = 0.5
+    default_f1 = f1_score(valid_y, labels_from_probs(valid_probs, default_threshold), average="macro")
+    threshold = default_threshold
+    threshold_f1 = default_f1
+    if args.threshold_tune:
+        threshold, threshold_f1 = tune_threshold(
+            valid_y,
+            valid_probs,
+            threshold_min=args.threshold_min,
+            threshold_max=args.threshold_max,
+            threshold_step=args.threshold_step,
+        )
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    test_ds = text_dataset_cls(test_df["text"], None, tokenizer, args.max_length)
+    test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False)
+    _, test_probs = predict(model, test_loader, device, torch)
+    return {
+        "model": model,
+        "best_f1": float(best_f1),
+        "report": report,
+        "valid_pred": valid_pred,
+        "valid_probs": valid_probs,
+        "valid_y": valid_y,
+        "default_f1": float(default_f1),
+        "threshold": float(threshold),
+        "threshold_f1": float(threshold_f1),
+        "test_probs": test_probs,
+    }
 
 
 def main() -> None:
@@ -320,52 +480,94 @@ def main() -> None:
         return AutoModelForSequenceClassification.from_pretrained(args.model_name, num_labels=2)
 
     if args.k_folds >= 2 and not args.debug:
-        run_kfold(train_df, tokenizer, model_factory, text_dataset_cls, libs, args)
+        run_kfold(train_df, test_df, tokenizer, model_factory, text_dataset_cls, libs, args)
 
-    train_split, valid_split = train_test_split(
-        train_df,
-        test_size=args.valid_size,
-        random_state=args.seed,
-        stratify=train_df["label"],
-    )
-    train_split = train_split.reset_index(drop=True)
-    valid_split = valid_split.reset_index(drop=True)
+    if args.multi_seed and not args.debug:
+        seeds = parse_seed_list(args.multi_seeds)
+        print(f"\nRunning multi-seed holdout ensemble: seeds={seeds}")
+        seed_results = []
+        test_probs = []
+        thresholds = []
+        for seed in seeds:
+            seed_args = copy.deepcopy(args)
+            seed_args.seed = seed
+            seed_args.output_dir = args.output_dir / f"seed_{seed}"
+            result = train_holdout_and_predict(
+                train_df=train_df,
+                test_df=test_df,
+                tokenizer=tokenizer,
+                model_factory=model_factory,
+                text_dataset_cls=text_dataset_cls,
+                libs=libs,
+                args=seed_args,
+                seed=seed,
+                save_model=True,
+                fold_name=f"seed {seed}",
+            )
+            seed_results.append(result)
+            test_probs.append(result["test_probs"])
+            thresholds.append(result["threshold"])
+            print(
+                f"seed {seed}: val_macro_f1={result['best_f1']:.4f} "
+                f"threshold={result['threshold']:.2f} threshold_macro_f1={result['threshold_f1']:.4f}"
+            )
+        ensemble_probs = np.mean(test_probs, axis=0)
+        ensemble_threshold = float(np.mean(thresholds)) if args.threshold_tune else 0.5
+        multiseed_path = sibling_submission_path(args.submission_path, "multiseed")
+        checked = write_submission(multiseed_path, test_df, labels_from_probs(ensemble_probs, ensemble_threshold))
+        print("\n=== Multi-Seed Results ===")
+        print(f"Validation Macro-F1 mean={np.mean([r['best_f1'] for r in seed_results]):.4f} std={np.std([r['best_f1'] for r in seed_results]):.4f}")
+        print(f"Applied threshold={ensemble_threshold:.2f}")
+        print(f"Saved: {multiseed_path}")
+        print(f"Prediction distribution: {checked['label'].value_counts().sort_index().to_dict()}")
+        print("Format check: OK")
+        return
 
-    print(f"\nHoldout split: train={len(train_split)} valid={len(valid_split)}")
-    model, best_f1, report, _ = train_one_split(
-        train_df=train_split,
-        valid_df=valid_split,
+    holdout_result = train_holdout_and_predict(
+        train_df=train_df,
+        test_df=test_df,
         tokenizer=tokenizer,
         model_factory=model_factory,
         text_dataset_cls=text_dataset_cls,
         libs=libs,
         args=args,
-        fold_name="holdout",
+        seed=args.seed,
         save_model=True,
+        fold_name="holdout",
     )
+    best_f1 = holdout_result["best_f1"]
+    report = holdout_result["report"]
 
     print("\n=== Validation Results ===")
     print(f"Validation Macro-F1: {best_f1:.4f}")
+    if args.threshold_tune:
+        print(f"Threshold-tuned Macro-F1: {holdout_result['threshold_f1']:.4f} at threshold={holdout_result['threshold']:.2f}")
+    else:
+        print(f"Default threshold Macro-F1: {holdout_result['default_f1']:.4f} at threshold=0.50")
     print(report)
+    print(f"DistilBERT holdout baseline for comparison: {BERT_HOLDOUT_BASELINE:.4f}")
     print(f"Classical tuned baseline for comparison: {CLASSICAL_TUNED_BASELINE}")
 
-    test_ds = text_dataset_cls(test_df["text"], None, tokenizer, args.max_length)
-    test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False)
-    test_pred, _ = predict(model, test_loader, device, torch)
-
-    submission = pd.DataFrame({"id": test_df["id"].values, "label": test_pred.astype(int)})
-    args.submission_path.parent.mkdir(parents=True, exist_ok=True)
-    submission.to_csv(args.submission_path, index=False)
-    checked = validate_submission(args.submission_path, test_df)
+    threshold = holdout_result["threshold"] if args.threshold_tune else 0.5
+    test_pred = labels_from_probs(holdout_result["test_probs"], threshold)
+    checked = write_submission(args.submission_path, test_df, test_pred)
 
     print("\n=== Submission ===")
     print(f"Saved: {args.submission_path}")
+    print(f"Applied threshold: {threshold:.2f}")
     print(f"Prediction distribution: {checked['label'].value_counts().sort_index().to_dict()}")
     print("Format check: OK")
+    if args.threshold_tune:
+        threshold_path = sibling_submission_path(args.submission_path, "threshold")
+        checked_threshold = write_submission(threshold_path, test_df, test_pred)
+        print(f"Threshold submission saved: {threshold_path}")
+        print(f"Threshold prediction distribution: {checked_threshold['label'].value_counts().sort_index().to_dict()}")
     if best_f1 < 0.86:
         print("NOTE: Validation is clearly below the tuned classical baseline; upload only as an exploratory Kaggle probe.")
     elif best_f1 < 0.8805:
         print("NOTE: Validation is below the tuned classical baseline; compare carefully before merging.")
+    elif args.threshold_tune and holdout_result["threshold_f1"] > BERT_HOLDOUT_BASELINE:
+        print("NOTE: Threshold-tuned validation improves over the DistilBERT baseline; upload the threshold submission first.")
     else:
         print("NOTE: Validation is competitive with the tuned classical baseline; worth a Kaggle public-score check.")
 
