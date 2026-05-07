@@ -14,9 +14,27 @@ from typing import Any, Iterable, Sequence, Tuple
 
 import joblib
 import numpy as np
+from scipy.linalg import eigh
 from scipy.signal import butter, sosfiltfilt
 
 EPS = 1e-10
+
+CROSS_BANDS: dict[str, Tuple[float, float]] = {
+    "theta": (4.0, 8.0),
+    "alpha": (8.0, 13.0),
+    "beta": (13.0, 30.0),
+    "low_beta": (13.0, 20.0),
+    "high_beta": (20.0, 30.0),
+    "broad": (4.0, 40.0),
+    "gamma": (70.0, 124.875),
+}
+CROSS_BAND_SETS: dict[str, Tuple[str, ...]] = {
+    "broad_only": ("broad",),
+    "alpha_beta_broad": ("alpha", "beta", "broad"),
+    "expanded_filterbank": ("theta", "alpha", "low_beta", "high_beta", "broad", "gamma"),
+    "alpha_beta_broad_gamma": ("alpha", "beta", "broad", "gamma"),
+    "broad_gamma": ("broad", "gamma"),
+}
 
 
 @dataclass(frozen=True)
@@ -85,6 +103,35 @@ def apply_raw_norm(x: np.ndarray, mode: str) -> np.ndarray:
     raise ValueError(f"Unknown raw normalization: {mode}")
 
 
+def safe_scale(scale: np.ndarray) -> np.ndarray:
+    return np.where(np.abs(scale) < EPS, 1.0, scale)
+
+
+def apply_cross_raw_norm(x: np.ndarray, mode: str) -> np.ndarray:
+    x = np.asarray(x, dtype=np.float64)
+    if mode == "none":
+        return x.copy()
+    if mode == "trial_zscore":
+        mu = x.mean(axis=(1, 2), keepdims=True)
+        sigma = safe_scale(x.std(axis=(1, 2), keepdims=True))
+        return (x - mu) / sigma
+    if mode == "channel_zscore":
+        mu = x.mean(axis=-1, keepdims=True)
+        sigma = safe_scale(x.std(axis=-1, keepdims=True))
+        return (x - mu) / sigma
+    if mode == "subject_standard":
+        mu = x.mean(axis=(0, 2), keepdims=True)
+        sigma = safe_scale(x.std(axis=(0, 2), keepdims=True))
+        return (x - mu) / sigma
+    if mode == "robust_subject":
+        mu = np.median(x, axis=(0, 2), keepdims=True)
+        q75 = np.percentile(x, 75, axis=(0, 2), keepdims=True)
+        q25 = np.percentile(x, 25, axis=(0, 2), keepdims=True)
+        sigma = safe_scale((q75 - q25) / 1.349)
+        return (x - mu) / sigma
+    raise ValueError(f"Unknown cross-subject raw normalization: {mode}")
+
+
 def bandpass(x: np.ndarray, low: float, high: float, sfreq: float, order: int) -> np.ndarray:
     nyq = sfreq / 2.0
     wn = (low / nyq, high / nyq)
@@ -107,6 +154,48 @@ def covariance_upper_features(filtered: np.ndarray) -> np.ndarray:
     return np.asarray(covs, dtype=np.float64)
 
 
+def cross_trial_covariances(filtered: np.ndarray, *, normalize_trace: bool = True, eps: float = 1e-3) -> np.ndarray:
+    covs = []
+    n_channels = filtered.shape[1]
+    eye = np.eye(n_channels)
+    for trial in filtered:
+        centered = trial - trial.mean(axis=-1, keepdims=True)
+        cov = centered @ centered.T / max(1, centered.shape[-1] - 1)
+        trace = np.trace(cov)
+        if normalize_trace and trace > EPS:
+            cov = cov / trace
+        if eps > 0:
+            scale = np.trace(cov) / n_channels
+            cov = cov + eps * max(float(scale), EPS) * eye
+        covs.append((cov + cov.T) * 0.5)
+    return np.asarray(covs, dtype=np.float64)
+
+
+def matrix_invsqrt(mat: np.ndarray) -> np.ndarray:
+    vals, vecs = eigh((mat + mat.T) * 0.5)
+    vals = np.maximum(vals, EPS)
+    return (vecs / np.sqrt(vals)) @ vecs.T
+
+
+def matrix_log(mat: np.ndarray) -> np.ndarray:
+    vals, vecs = eigh((mat + mat.T) * 0.5)
+    vals = np.maximum(vals, EPS)
+    return (vecs * np.log(vals)) @ vecs.T
+
+
+def vectorize_symmetric(mats: np.ndarray, *, scale_offdiag: bool) -> np.ndarray:
+    iu = np.triu_indices(mats.shape[1])
+    feats = mats[:, iu[0], iu[1]].copy()
+    if scale_offdiag:
+        feats[:, iu[0] != iu[1]] *= np.sqrt(2.0)
+    return feats
+
+
+def cross_alignment_matrix(x: np.ndarray) -> np.ndarray:
+    cov = np.mean(cross_trial_covariances(x, normalize_trace=False, eps=1e-3), axis=0)
+    return matrix_invsqrt(cov)
+
+
 def band_features(filtered: np.ndarray, feature_set: str) -> np.ndarray:
     var = np.maximum(np.var(filtered, axis=-1), EPS)
     parts = [np.log(var)]
@@ -124,6 +213,76 @@ def band_features(filtered: np.ndarray, feature_set: str) -> np.ndarray:
     else:
         raise ValueError(f"Unknown feature set: {feature_set}")
     return np.concatenate(parts, axis=1).astype(np.float64)
+
+
+def effective_cross_band(name: str, sfreq: float) -> Tuple[float, float]:
+    low, high = CROSS_BANDS[name]
+    return float(low), float(min(high, (sfreq / 2.0) * 0.999))
+
+
+def cross_filtered_bands(x: np.ndarray, checkpoint: dict[str, Any]) -> dict[str, np.ndarray]:
+    config = checkpoint["config"]
+    bands = {}
+    for band_name in CROSS_BAND_SETS[config["band_set"]]:
+        low, high = effective_cross_band(band_name, float(checkpoint["sfreq"]))
+        bands[band_name] = bandpass(x, low, high, float(checkpoint["sfreq"]), int(checkpoint["filter_order"]))
+    return bands
+
+
+def cross_logvar_meanabs_features(filtered: np.ndarray) -> np.ndarray:
+    var = np.maximum(np.var(filtered, axis=-1), EPS)
+    return np.concatenate([np.log(var), np.mean(np.abs(filtered), axis=-1)], axis=1)
+
+
+def cross_bandpower_logvar_features(filtered: np.ndarray) -> np.ndarray:
+    var = np.maximum(np.var(filtered, axis=-1), EPS)
+    power = np.maximum(np.mean(filtered**2, axis=-1), EPS)
+    return np.concatenate([np.log(var), np.log(power), np.sqrt(power)], axis=1)
+
+
+def cross_covariance_upper_features(filtered: np.ndarray) -> np.ndarray:
+    covs = cross_trial_covariances(filtered, normalize_trace=True, eps=1e-3)
+    iu = np.triu_indices(filtered.shape[1])
+    return covs[:, iu[0], iu[1]]
+
+
+def cross_csp_features(bands: dict[str, np.ndarray], checkpoint: dict[str, Any]) -> np.ndarray:
+    filters = checkpoint["feature_state"]["csp_filters"]
+    parts = []
+    for band_name, filtered in bands.items():
+        w = np.asarray(filters[band_name], dtype=np.float64)
+        projected = np.einsum("kc,nct->nkt", w, filtered, optimize=True)
+        var = np.maximum(np.var(projected, axis=-1), EPS)
+        parts.append(np.log(var / np.maximum(var.sum(axis=1, keepdims=True), EPS)))
+    return np.concatenate(parts, axis=1).astype(np.float64)
+
+
+def cross_tangent_features(bands: dict[str, np.ndarray], checkpoint: dict[str, Any]) -> np.ndarray:
+    refs = checkpoint["feature_state"]["tangent_refs"]
+    parts = []
+    for band_name, filtered in bands.items():
+        ref_inv = matrix_invsqrt(np.asarray(refs[band_name], dtype=np.float64))
+        logs = []
+        for cov in cross_trial_covariances(filtered, normalize_trace=False, eps=1e-3):
+            logs.append(matrix_log(ref_inv @ cov @ ref_inv))
+        parts.append(vectorize_symmetric(np.asarray(logs, dtype=np.float64), scale_offdiag=True))
+    return np.concatenate(parts, axis=1).astype(np.float64)
+
+
+def extract_cross_features(x: np.ndarray, checkpoint: dict[str, Any]) -> np.ndarray:
+    family = checkpoint["config"]["feature_family"]
+    bands = cross_filtered_bands(x, checkpoint)
+    if family == "logvar_meanabs":
+        return np.concatenate([cross_logvar_meanabs_features(bands[name]) for name in bands], axis=1).astype(np.float64)
+    if family == "bandpower_logvar":
+        return np.concatenate([cross_bandpower_logvar_features(bands[name]) for name in bands], axis=1).astype(np.float64)
+    if family == "cov_upper":
+        return np.concatenate([cross_covariance_upper_features(bands[name]) for name in bands], axis=1).astype(np.float64)
+    if family == "csp":
+        return cross_csp_features(bands, checkpoint)
+    if family == "tangent":
+        return cross_tangent_features(bands, checkpoint)
+    raise ValueError(f"Unknown cross-subject feature family: {family}")
 
 
 def bands_from_checkpoint(checkpoint: dict[str, Any]) -> Sequence[Tuple[float, float]]:
@@ -153,10 +312,41 @@ def apply_subject_feature_normalization(features: np.ndarray, mode: str) -> np.n
     raise ValueError(f"Unknown feature normalization: {mode}")
 
 
+def apply_cross_feature_normalization(features: np.ndarray, mode: str) -> np.ndarray:
+    if mode == "none":
+        return features
+    if mode == "subject":
+        mu = features.mean(axis=0)
+        sigma = safe_scale(features.std(axis=0))
+        return (features - mu) / sigma
+    if mode == "robust_subject":
+        mu = np.median(features, axis=0)
+        q75 = np.percentile(features, 75, axis=0)
+        q25 = np.percentile(features, 25, axis=0)
+        sigma = safe_scale((q75 - q25) / 1.349)
+        return (features - mu) / sigma
+    raise ValueError(f"Unknown cross-subject feature normalization: {mode}")
+
+
+def preprocess_cross_checkpoint(x: np.ndarray, checkpoint: dict[str, Any]) -> np.ndarray:
+    config = checkpoint["config"]
+    x = apply_cross_raw_norm(x, config["raw_norm"])
+    if config["align"] == "euclidean":
+        align_matrix = cross_alignment_matrix(x)
+        x = np.einsum("cd,ndt->nct", align_matrix, x, optimize=True)
+    elif config["align"] != "none":
+        raise ValueError(f"Unknown cross-subject alignment: {config['align']}")
+    features = extract_cross_features(x, checkpoint)
+    features = apply_cross_feature_normalization(features, config["feature_norm"])
+    return checkpoint["scaler"].transform(features)
+
+
 def preprocess_for_inference(x: np.ndarray, checkpoint: dict[str, Any]) -> np.ndarray:
     x = np.asarray(x, dtype=np.float64)
     if x.ndim != 3:
         raise ValueError(f"Expected x with shape (N, C, T), got {x.shape}")
+    if str(checkpoint.get("version", "")).startswith("task2-cross-subject-optimize"):
+        return preprocess_cross_checkpoint(x, checkpoint)
     expected_channels = checkpoint.get("n_channels")
     if expected_channels is not None and x.shape[1] != expected_channels:
         raise ValueError(f"Channel count mismatch: checkpoint expects {expected_channels}, got {x.shape[1]}")
