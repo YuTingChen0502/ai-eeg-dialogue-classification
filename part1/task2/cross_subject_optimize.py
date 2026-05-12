@@ -111,9 +111,16 @@ class EvalRecord:
     std_macro_f1: float
     mean_accuracy: float
     std_accuracy: float
+    worst_macro_f1: float
+    worst_accuracy: float
+    selection_score: float
     confusion: np.ndarray
+    class_f1: dict[int, float]
     true_distribution: dict[int, int]
     pred_distribution: dict[int, int]
+    mean_confidence: float
+    mean_margin: float
+    low_confidence_rate: float
     per_subject: list[dict[str, Any]]
     oof_ids: list[str]
     oof_true: np.ndarray
@@ -132,7 +139,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top-k-ensemble", type=int, default=4)
     parser.add_argument("--results-csv", type=Path, default=Path("task2_cross_loso_results.csv"))
     parser.add_argument("--oof-csv", type=Path, default=Path("task2_cross_oof_predictions.csv"))
+    parser.add_argument("--subject-report-csv", type=Path, default=Path("task2_cross_subject_report.csv"))
+    parser.add_argument("--candidate-summary-csv", type=Path, default=Path("task2_cross_candidate_summary.csv"))
     parser.add_argument("--checkpoint", type=Path, default=Path("outputs/task2_cross_subject/task2_model.pkl"))
+    parser.add_argument(
+        "--config-names",
+        default=None,
+        help="Optional comma-separated config names for a focused experiment run.",
+    )
     return parser.parse_args()
 
 
@@ -496,7 +510,7 @@ def evaluate_config(
     else:
         static_features = None
     per_subject, f1s, accs = [], [], []
-    all_true, all_pred, oof_ids = [], [], []
+    all_true, all_pred, all_probs, oof_ids = [], [], [], []
     total_confusion = np.zeros((len(LABELS), len(LABELS)), dtype=np.int64)
 
     for hold_idx, subject_name in enumerate(names):
@@ -515,7 +529,9 @@ def evaluate_config(
             va_features = static_features[hold_idx]
             va_norm = fit_subject_feature_normalizer(va_features, config.feature_norm)
             va_features = apply_feature_normalizer(va_features, va_norm)
-            pred = np.asarray(model.predict(scaler.transform(va_features)), dtype=np.int64)
+            va_features = scaler.transform(va_features)
+            probs = prediction_scores(model, va_features)
+            pred = np.argmax(probs, axis=1).astype(np.int64)
         else:
             train_x = [x for idx, x in enumerate(x_all) if idx != hold_idx]
             pipeline = fit_pipeline(train_x, train_y, config, sfreq, filter_order, seed, max_iter)
@@ -523,9 +539,11 @@ def evaluate_config(
             va_norm = fit_subject_feature_normalizer(va_features, config.feature_norm)
             va_features = apply_feature_normalizer(va_features, va_norm)
             va_features = pipeline.scaler.transform(va_features)
-            pred = np.asarray(pipeline.model.predict(va_features), dtype=np.int64)
+            probs = prediction_scores(pipeline.model, va_features)
+            pred = np.argmax(probs, axis=1).astype(np.int64)
         y_true = y_all[hold_idx]
-        f1 = f1_score(y_true, pred, average="macro", labels=LABELS)
+        per_class = f1_score(y_true, pred, average=None, labels=LABELS, zero_division=0)
+        f1 = f1_score(y_true, pred, average="macro", labels=LABELS, zero_division=0)
         acc = accuracy_score(y_true, pred)
         cm = confusion_matrix(y_true, pred, labels=LABELS)
         total_confusion += cm
@@ -533,12 +551,14 @@ def evaluate_config(
         accs.append(float(acc))
         all_true.append(y_true)
         all_pred.append(pred)
+        all_probs.append(probs)
         oof_ids.extend([f"{subject_name}:{i}" for i in range(len(pred))])
         per_subject.append(
             {
                 "subject": subject_name,
                 "macro_f1": round(float(f1), 6),
                 "accuracy": round(float(acc), 6),
+                "class_f1": {label: round(float(per_class[idx]), 6) for idx, label in enumerate(LABELS)},
                 "true_distribution": distribution(y_true),
                 "pred_distribution": distribution(pred),
                 "confusion": cm.tolist(),
@@ -546,15 +566,40 @@ def evaluate_config(
         )
     true = np.concatenate(all_true)
     pred = np.concatenate(all_pred)
+    probs = np.concatenate(all_probs)
+    class_f1_values = f1_score(true, pred, average=None, labels=LABELS, zero_division=0)
+    sorted_probs = np.sort(probs, axis=1)
+    confidence = sorted_probs[:, -1]
+    margin = sorted_probs[:, -1] - sorted_probs[:, -2]
+    worst_macro_f1 = float(np.min(f1s))
+    worst_accuracy = float(np.min(accs))
+    mean_macro_f1 = float(np.mean(f1s))
+    std_macro_f1 = float(np.std(f1s))
+    mean_accuracy = float(np.mean(accs))
+    std_accuracy = float(np.std(accs))
+    class_stability_penalty = float(np.std(class_f1_values))
+    selection_score = (
+        mean_macro_f1
+        - 0.35 * std_macro_f1
+        + 0.25 * worst_macro_f1
+        - 0.05 * class_stability_penalty
+    )
     return EvalRecord(
         config=config,
-        mean_macro_f1=float(np.mean(f1s)),
-        std_macro_f1=float(np.std(f1s)),
-        mean_accuracy=float(np.mean(accs)),
-        std_accuracy=float(np.std(accs)),
+        mean_macro_f1=mean_macro_f1,
+        std_macro_f1=std_macro_f1,
+        mean_accuracy=mean_accuracy,
+        std_accuracy=std_accuracy,
+        worst_macro_f1=worst_macro_f1,
+        worst_accuracy=worst_accuracy,
+        selection_score=float(selection_score),
         confusion=total_confusion,
+        class_f1={label: float(class_f1_values[idx]) for idx, label in enumerate(LABELS)},
         true_distribution=distribution(true),
         pred_distribution=distribution(pred),
+        mean_confidence=float(np.mean(confidence)),
+        mean_margin=float(np.mean(margin)),
+        low_confidence_rate=float(np.mean(margin < 0.15)),
         per_subject=per_subject,
         oof_ids=oof_ids,
         oof_true=true,
@@ -574,12 +619,34 @@ def make_configs() -> list[Config]:
         Config("expanded_bandpower_subject_lda", "none", "none", "expanded_filterbank", "bandpower_logvar", "subject", "lda", None),
         Config("csp_alpha_beta_broad_lda", "channel_zscore", "none", "alpha_beta_broad", "csp", "none", "lda", None, 1),
         Config("csp_alpha_beta_broad_lr", "channel_zscore", "none", "alpha_beta_broad", "csp", "none", "logreg", 0.5, 1),
+        Config("csp_broad_lda_c1", "channel_zscore", "none", "broad_only", "csp", "none", "lda", None, 1),
+        Config("csp_broad_lda_c2", "channel_zscore", "none", "broad_only", "csp", "none", "lda", None, 2),
+        Config("csp_alpha_beta_broad_lda_c2", "channel_zscore", "none", "alpha_beta_broad", "csp", "none", "lda", None, 2),
+        Config("csp_alpha_beta_broad_gamma_lda_c1", "channel_zscore", "none", "alpha_beta_broad_gamma", "csp", "none", "lda", None, 1),
+        Config("csp_expanded_filterbank_lda_c1", "channel_zscore", "none", "expanded_filterbank", "csp", "none", "lda", None, 1),
+        Config("csp_align_alpha_beta_broad_lda_c1", "subject_standard", "euclidean", "alpha_beta_broad", "csp", "none", "lda", None, 1),
         Config("cov_subject_lda", "none", "none", "alpha_beta_broad", "cov_upper", "subject", "lda", None),
         Config("cov_robust_lda", "robust_subject", "none", "alpha_beta_broad", "cov_upper", "robust_subject", "lda", None),
+        Config("cov_align_subject_lda", "subject_standard", "euclidean", "alpha_beta_broad", "cov_upper", "subject", "lda", None),
         Config("tangent_broad_lda", "none", "none", "broad_only", "tangent", "subject", "lda", None),
+        Config("tangent_broad_robust_lda", "robust_subject", "none", "broad_only", "tangent", "robust_subject", "lda", None),
+        Config("tangent_broad_align_lda", "subject_standard", "euclidean", "broad_only", "tangent", "subject", "lda", None),
+        Config("tangent_alpha_beta_broad_lda", "none", "none", "alpha_beta_broad", "tangent", "subject", "lda", None),
+        Config("tangent_alpha_beta_broad_align_lda", "subject_standard", "euclidean", "alpha_beta_broad", "tangent", "subject", "lda", None),
         Config("baseline_logvar_meanabs_subject_svc", "none", "none", "alpha_beta_broad", "logvar_meanabs", "subject", "linear_svc", 0.5),
     ]
     return configs
+
+
+def filter_configs(configs: Sequence[Config], names_csv: str | None) -> list[Config]:
+    if not names_csv:
+        return list(configs)
+    requested = [name.strip() for name in names_csv.split(",") if name.strip()]
+    config_map = {config.name: config for config in configs}
+    missing = [name for name in requested if name not in config_map]
+    if missing:
+        raise KeyError(f"Unknown config name(s): {missing}. Available: {sorted(config_map)}")
+    return [config_map[name] for name in requested]
 
 
 def config_to_dict(config: Config) -> dict[str, Any]:
@@ -605,6 +672,13 @@ def write_results(records: Sequence[EvalRecord], path: Path) -> None:
         "std_macro_f1",
         "mean_accuracy",
         "std_accuracy",
+        "worst_macro_f1",
+        "worst_accuracy",
+        "selection_score",
+        "class_f1",
+        "mean_confidence",
+        "mean_margin",
+        "low_confidence_rate",
         "true_distribution",
         "pred_distribution",
         "confusion",
@@ -623,6 +697,13 @@ def write_results(records: Sequence[EvalRecord], path: Path) -> None:
                     "std_macro_f1": f"{record.std_macro_f1:.8f}",
                     "mean_accuracy": f"{record.mean_accuracy:.8f}",
                     "std_accuracy": f"{record.std_accuracy:.8f}",
+                    "worst_macro_f1": f"{record.worst_macro_f1:.8f}",
+                    "worst_accuracy": f"{record.worst_accuracy:.8f}",
+                    "selection_score": f"{record.selection_score:.8f}",
+                    "class_f1": json.dumps(record.class_f1, sort_keys=True),
+                    "mean_confidence": f"{record.mean_confidence:.8f}",
+                    "mean_margin": f"{record.mean_margin:.8f}",
+                    "low_confidence_rate": f"{record.low_confidence_rate:.8f}",
                     "true_distribution": json.dumps(record.true_distribution, sort_keys=True),
                     "pred_distribution": json.dumps(record.pred_distribution, sort_keys=True),
                     "confusion": json.dumps(record.confusion.tolist()),
@@ -640,6 +721,39 @@ def write_oof(records: Sequence[EvalRecord], path: Path) -> None:
         for record in records:
             for example_id, y_true, y_pred in zip(record.oof_ids, record.oof_true, record.oof_pred):
                 writer.writerow([record.config.name, example_id, int(y_true), int(y_pred)])
+
+
+def write_subject_report(records: Sequence[EvalRecord], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fields = [
+        "rank",
+        "config_name",
+        "subject",
+        "macro_f1",
+        "accuracy",
+        "class_f1",
+        "true_distribution",
+        "pred_distribution",
+        "confusion",
+    ]
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        for rank, record in enumerate(records, start=1):
+            for row in record.per_subject:
+                writer.writerow(
+                    {
+                        "rank": rank,
+                        "config_name": record.config.name,
+                        "subject": row["subject"],
+                        "macro_f1": f"{row['macro_f1']:.6f}",
+                        "accuracy": f"{row['accuracy']:.6f}",
+                        "class_f1": json.dumps(row["class_f1"], sort_keys=True),
+                        "true_distribution": json.dumps(row["true_distribution"], sort_keys=True),
+                        "pred_distribution": json.dumps(row["pred_distribution"], sort_keys=True),
+                        "confusion": json.dumps(row["confusion"]),
+                    }
+                )
 
 
 def fit_final_pipeline(subjects: Sequence[Subject], config: Config, args: argparse.Namespace) -> FittedPipeline:
@@ -676,6 +790,22 @@ def choose_diverse_records(records: Sequence[EvalRecord], top_k: int) -> list[Ev
 def quota_from_distribution(dist: dict[int, int], total: int) -> dict[int, int]:
     observed_total = sum(dist.values())
     raw = {label: (dist[label] / observed_total) * total for label in LABELS}
+    quota = {label: int(np.floor(raw[label])) for label in LABELS}
+    remaining = total - sum(quota.values())
+    for label in sorted(LABELS, key=lambda lab: raw[lab] - quota[lab], reverse=True)[:remaining]:
+        quota[label] += 1
+    return quota
+
+
+def validation_prior_quota(records: Sequence[EvalRecord], total: int) -> dict[int, int]:
+    weights = np.asarray([max(record.selection_score, EPS) for record in records], dtype=np.float64)
+    weights = weights / np.maximum(weights.sum(), EPS)
+    rates = {label: 0.0 for label in LABELS}
+    for weight, record in zip(weights, records):
+        record_total = sum(record.pred_distribution.values())
+        for label in LABELS:
+            rates[label] += float(weight) * record.pred_distribution[label] / record_total
+    raw = {label: rates[label] * total for label in LABELS}
     quota = {label: int(np.floor(raw[label])) for label in LABELS}
     remaining = total - sum(quota.values())
     for label in sorted(LABELS, key=lambda lab: raw[lab] - quota[lab], reverse=True)[:remaining]:
@@ -757,6 +887,26 @@ def changed_rows(ids: np.ndarray, base: np.ndarray, labels: np.ndarray) -> list[
     ]
 
 
+def label_at_id(ids: np.ndarray, labels: np.ndarray, sample_id: int) -> int | None:
+    matches = np.flatnonzero(ids == sample_id)
+    if len(matches) != 1:
+        return None
+    return int(labels[int(matches[0])])
+
+
+def guardrail_notes(ids: np.ndarray, labels: np.ndarray) -> list[str]:
+    notes = []
+    if label_at_id(ids, labels, 0) == 0:
+        notes.append("id0=0 matches known harmful public probe")
+    if label_at_id(ids, labels, 16) == 2:
+        notes.append("id16=2 matches known harmful public probe")
+    if label_at_id(ids, labels, 26) == 2:
+        notes.append("id26=2 was public-neutral, not evidence-positive")
+    if label_at_id(ids, labels, 4) == 3 and label_at_id(ids, labels, 28) == 1:
+        notes.append("id4=3/id28=1 pair was public-neutral only")
+    return notes
+
+
 def print_candidate_summary(
     name: str,
     path: Path,
@@ -770,7 +920,25 @@ def print_candidate_summary(
     print(f"  identical to previous: {', '.join(identical) if identical else 'none'}")
     for ref_name, ref_labels in references.items():
         changes = changed_rows(ids, ref_labels, labels)
-        print(f"  changed rows vs {ref_name} ({len(changes)}): {', '.join(changes) if changes else 'none'}")
+        print(f"  Hamming vs {ref_name}: {len(changes)}")
+        print(f"  changed rows vs {ref_name}: {', '.join(changes) if changes else 'none'}")
+    notes = guardrail_notes(ids, labels)
+    print(f"  guardrails: {'; '.join(notes) if notes else 'none'}")
+
+
+def write_candidate_summary(
+    rows: Sequence[dict[str, Any]],
+    path: Path,
+    references: dict[str, np.ndarray],
+) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fields = ["name", "path", "distribution", "guardrails", "changed_from_base"]
+    fields.extend(f"hamming_to_{Path(name).stem}" for name in references)
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
 
 
 def save_checkpoint(path: Path, pipeline: FittedPipeline, eval_record: EvalRecord) -> None:
@@ -792,9 +960,16 @@ def save_checkpoint(path: Path, pipeline: FittedPipeline, eval_record: EvalRecor
             "std_macro_f1": eval_record.std_macro_f1,
             "mean_accuracy": eval_record.mean_accuracy,
             "std_accuracy": eval_record.std_accuracy,
+            "worst_macro_f1": eval_record.worst_macro_f1,
+            "worst_accuracy": eval_record.worst_accuracy,
+            "selection_score": eval_record.selection_score,
+            "class_f1": eval_record.class_f1,
             "confusion": eval_record.confusion.tolist(),
             "pred_distribution": eval_record.pred_distribution,
             "true_distribution": eval_record.true_distribution,
+            "mean_confidence": eval_record.mean_confidence,
+            "mean_margin": eval_record.mean_margin,
+            "low_confidence_rate": eval_record.low_confidence_rate,
         },
     }
     joblib.dump(checkpoint, path)
@@ -809,7 +984,7 @@ def main() -> None:
     print(f"Training label distribution: {distribution(np.concatenate([s.y for s in subjects]))}")
 
     records = []
-    configs = make_configs()
+    configs = filter_configs(make_configs(), args.config_names)
     for idx, config in enumerate(configs, start=1):
         record = evaluate_config(subjects, config, args.sfreq, args.filter_order, args.seed, args.max_iter)
         records.append(record)
@@ -817,19 +992,28 @@ def main() -> None:
             f"[{idx:02d}/{len(configs)}] {config.name:38s} "
             f"macro_f1={record.mean_macro_f1:.4f}+/-{record.std_macro_f1:.4f} "
             f"acc={record.mean_accuracy:.4f}+/-{record.std_accuracy:.4f} "
+            f"worst_f1={record.worst_macro_f1:.4f} "
+            f"score={record.selection_score:.4f} "
             f"pred_dist={record.pred_distribution}",
             flush=True,
         )
-    records.sort(key=lambda rec: (rec.mean_macro_f1, -rec.std_macro_f1, rec.mean_accuracy), reverse=True)
+    records.sort(
+        key=lambda rec: (rec.selection_score, rec.mean_macro_f1, -rec.std_macro_f1, rec.mean_accuracy),
+        reverse=True,
+    )
     write_results(records, args.results_csv)
     write_oof(records, args.oof_csv)
+    write_subject_report(records, args.subject_report_csv)
 
-    print("\n=== Top LOSO configs ===")
+    print("\n=== Top stability-selected LOSO configs ===")
     for rank, record in enumerate(records[:8], start=1):
         print(
-            f"{rank}. {record.config.name}: macro_f1={record.mean_macro_f1:.4f}+/-{record.std_macro_f1:.4f}, "
-            f"acc={record.mean_accuracy:.4f}+/-{record.std_accuracy:.4f}, pred_dist={record.pred_distribution}"
+            f"{rank}. {record.config.name}: score={record.selection_score:.4f}, "
+            f"macro_f1={record.mean_macro_f1:.4f}+/-{record.std_macro_f1:.4f}, "
+            f"acc={record.mean_accuracy:.4f}+/-{record.std_accuracy:.4f}, "
+            f"worst_f1={record.worst_macro_f1:.4f}, pred_dist={record.pred_distribution}"
         )
+        print(f"   class_f1={record.class_f1}")
         print(f"   confusion={record.confusion.tolist()}")
 
     best_record = records[0]
@@ -849,21 +1033,19 @@ def main() -> None:
     ensemble_probs /= np.maximum(ensemble_probs.sum(axis=1, keepdims=True), EPS)
     ensemble_labels = np.argmax(ensemble_probs, axis=1).astype(np.int64)
 
-    conservative_quota = {label: len(test_ids) // len(LABELS) for label in LABELS}
-    conservative_labels = quota_assign(ensemble_probs, conservative_quota)
-    reduced_quota = supported_class2_reduced_quota(records, ensemble_labels)
-    reduced_labels = quota_assign(ensemble_probs, reduced_quota) if reduced_quota is not None else None
+    validation_quota = validation_prior_quota(ensemble_records, len(test_ids))
+    validation_prior_labels = quota_assign(ensemble_probs, validation_quota)
+    print(f"Validation-prior quota from selected LOSO OOF distributions: {validation_quota}")
+    print(
+        "Validation-prior changes vs ensemble argmax: "
+        f"{len(changed_rows(test_ids, ensemble_labels, validation_prior_labels))}"
+    )
 
     candidates: list[tuple[str, Path, np.ndarray]] = [
-        ("strongest_loso_single", args.output_dir / "submission_task2_cross_loso_single.csv", single_labels),
-        ("diverse_ensemble", args.output_dir / "submission_task2_cross_diverse_ensemble.csv", ensemble_labels),
-        ("conservative_calibrated", args.output_dir / "submission_task2_cross_conservative_calibrated.csv", conservative_labels),
+        ("stable_single", args.output_dir / "submission_task2_robust_stable_single.csv", single_labels),
+        ("robust_ensemble", args.output_dir / "submission_task2_robust_ensemble.csv", ensemble_labels),
+        ("validation_prior_ensemble", args.output_dir / "submission_task2_robust_valprior.csv", validation_prior_labels),
     ]
-    if reduced_labels is not None:
-        print(f"Class-2-reduced quota supported by LOSO/test overprediction signal: {reduced_quota}")
-        candidates.append(("class2_reduced_calibrated", args.output_dir / "submission_task2_cross_class2_reduced.csv", reduced_labels))
-    else:
-        print("Class-2-reduced calibrated candidate skipped: not supported by LOSO/test overprediction signal.")
 
     reference_paths = [
         Path("submission_task2_best_loso.csv"),
@@ -877,22 +1059,39 @@ def main() -> None:
     }
 
     print("\n=== Generated candidates ===")
+    candidate_summary_rows = []
     for name, path, labels in candidates:
         write_submission(path, test_ids, labels)
         print_candidate_summary(name, path, test_ids, labels, references)
+        row = {
+            "name": name,
+            "path": str(path),
+            "distribution": json.dumps(distribution(labels), sort_keys=True),
+            "guardrails": "; ".join(guardrail_notes(test_ids, labels)),
+            "changed_from_base": (
+                ""
+                if name == "robust_ensemble"
+                else len(changed_rows(test_ids, ensemble_labels, labels))
+            ),
+        }
+        for ref_name, ref_labels in references.items():
+            row[f"hamming_to_{Path(ref_name).stem}"] = int(np.sum(labels != ref_labels))
+        candidate_summary_rows.append(row)
+    write_candidate_summary(candidate_summary_rows, args.candidate_summary_csv, references)
 
     print("\nSuggested upload order:")
     order = [
-        "submission_task2_cross_diverse_ensemble.csv",
-        "submission_task2_cross_loso_single.csv",
-        "submission_task2_cross_class2_reduced.csv",
-        "submission_task2_cross_conservative_calibrated.csv",
+        "submission_task2_robust_ensemble.csv",
+        "submission_task2_robust_valprior.csv",
+        "submission_task2_robust_stable_single.csv",
     ]
     available = {path.name for _, path, _ in candidates}
     for idx, file_name in enumerate([name for name in order if name in available], start=1):
         print(f"  {idx}. {file_name}")
     print(f"\nWrote LOSO table to {args.results_csv}")
     print(f"Wrote OOF predictions to {args.oof_csv}")
+    print(f"Wrote per-subject report to {args.subject_report_csv}")
+    print(f"Wrote candidate summary to {args.candidate_summary_csv}")
     print(f"Wrote best single-model checkpoint to {args.checkpoint}")
 
 
