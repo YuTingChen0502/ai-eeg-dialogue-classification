@@ -154,7 +154,13 @@ def covariance_upper_features(filtered: np.ndarray) -> np.ndarray:
     return np.asarray(covs, dtype=np.float64)
 
 
-def cross_trial_covariances(filtered: np.ndarray, *, normalize_trace: bool = True, eps: float = 1e-3) -> np.ndarray:
+def cross_trial_covariances(
+    filtered: np.ndarray,
+    *,
+    normalize_trace: bool = True,
+    eps: float = 1e-3,
+    shrinkage: float = 0.0,
+) -> np.ndarray:
     covs = []
     n_channels = filtered.shape[1]
     eye = np.eye(n_channels)
@@ -164,11 +170,29 @@ def cross_trial_covariances(filtered: np.ndarray, *, normalize_trace: bool = Tru
         trace = np.trace(cov)
         if normalize_trace and trace > EPS:
             cov = cov / trace
+        if shrinkage > 0:
+            diag_cov = np.diag(np.diag(cov))
+            cov = (1.0 - shrinkage) * cov + shrinkage * diag_cov
         if eps > 0:
             scale = np.trace(cov) / n_channels
             cov = cov + eps * max(float(scale), EPS) * eye
         covs.append((cov + cov.T) * 0.5)
     return np.asarray(covs, dtype=np.float64)
+
+
+def cross_config_value(checkpoint: dict[str, Any], key: str, default: Any) -> Any:
+    return checkpoint.get("config", {}).get(key, default)
+
+
+def cross_trace_norm(checkpoint: dict[str, Any], *, default_for_family: bool) -> bool:
+    mode = str(cross_config_value(checkpoint, "cov_trace_norm", "default"))
+    if mode == "default":
+        return default_for_family
+    if mode == "trace":
+        return True
+    if mode == "raw":
+        return False
+    raise ValueError(f"Unknown cov_trace_norm: {mode}")
 
 
 def matrix_invsqrt(mat: np.ndarray) -> np.ndarray:
@@ -240,8 +264,13 @@ def cross_bandpower_logvar_features(filtered: np.ndarray) -> np.ndarray:
     return np.concatenate([np.log(var), np.log(power), np.sqrt(power)], axis=1)
 
 
-def cross_covariance_upper_features(filtered: np.ndarray) -> np.ndarray:
-    covs = cross_trial_covariances(filtered, normalize_trace=True, eps=1e-3)
+def cross_covariance_upper_features(filtered: np.ndarray, checkpoint: dict[str, Any]) -> np.ndarray:
+    covs = cross_trial_covariances(
+        filtered,
+        normalize_trace=cross_trace_norm(checkpoint, default_for_family=True),
+        eps=float(cross_config_value(checkpoint, "cov_eps", 1e-3)),
+        shrinkage=float(cross_config_value(checkpoint, "cov_shrinkage", 0.0)),
+    )
     iu = np.triu_indices(filtered.shape[1])
     return covs[:, iu[0], iu[1]]
 
@@ -263,7 +292,12 @@ def cross_tangent_features(bands: dict[str, np.ndarray], checkpoint: dict[str, A
     for band_name, filtered in bands.items():
         ref_inv = matrix_invsqrt(np.asarray(refs[band_name], dtype=np.float64))
         logs = []
-        for cov in cross_trial_covariances(filtered, normalize_trace=False, eps=1e-3):
+        for cov in cross_trial_covariances(
+            filtered,
+            normalize_trace=cross_trace_norm(checkpoint, default_for_family=False),
+            eps=float(cross_config_value(checkpoint, "cov_eps", 1e-3)),
+            shrinkage=float(cross_config_value(checkpoint, "cov_shrinkage", 0.0)),
+        ):
             logs.append(matrix_log(ref_inv @ cov @ ref_inv))
         parts.append(vectorize_symmetric(np.asarray(logs, dtype=np.float64), scale_offdiag=True))
     return np.concatenate(parts, axis=1).astype(np.float64)
@@ -277,7 +311,7 @@ def extract_cross_features(x: np.ndarray, checkpoint: dict[str, Any]) -> np.ndar
     if family == "bandpower_logvar":
         return np.concatenate([cross_bandpower_logvar_features(bands[name]) for name in bands], axis=1).astype(np.float64)
     if family == "cov_upper":
-        return np.concatenate([cross_covariance_upper_features(bands[name]) for name in bands], axis=1).astype(np.float64)
+        return np.concatenate([cross_covariance_upper_features(bands[name], checkpoint) for name in bands], axis=1).astype(np.float64)
     if family == "csp":
         return cross_csp_features(bands, checkpoint)
     if family == "tangent":

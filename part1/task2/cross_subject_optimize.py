@@ -67,6 +67,11 @@ class Config:
     model: str
     C: float | None = None
     csp_components: int = 2
+    cov_eps: float = 1e-3
+    cov_shrinkage: float = 0.0
+    cov_trace_norm: str = "default"
+    tangent_ref: str = "mean"
+    priors: str = "none"
 
 
 @dataclass
@@ -121,6 +126,10 @@ class EvalRecord:
     mean_confidence: float
     mean_margin: float
     low_confidence_rate: float
+    prior_macro_f1: float
+    prior_accuracy: float
+    prior_changes: int
+    prior_pred_distribution: dict[int, int]
     per_subject: list[dict[str, Any]]
     oof_ids: list[str]
     oof_true: np.ndarray
@@ -253,7 +262,23 @@ def apply_subject_transform(x: np.ndarray, transform: SubjectTransform, *, inclu
     return out
 
 
-def trial_covariances(x: np.ndarray, *, normalize_trace: bool = True, eps: float = 1e-3) -> np.ndarray:
+def trace_norm_for_config(config: Config, *, default_for_family: bool) -> bool:
+    if config.cov_trace_norm == "default":
+        return default_for_family
+    if config.cov_trace_norm == "trace":
+        return True
+    if config.cov_trace_norm == "raw":
+        return False
+    raise ValueError(f"Unknown cov_trace_norm: {config.cov_trace_norm}")
+
+
+def trial_covariances(
+    x: np.ndarray,
+    *,
+    normalize_trace: bool = True,
+    eps: float = 1e-3,
+    shrinkage: float = 0.0,
+) -> np.ndarray:
     covs = []
     n_channels = x.shape[1]
     eye = np.eye(n_channels)
@@ -263,6 +288,9 @@ def trial_covariances(x: np.ndarray, *, normalize_trace: bool = True, eps: float
         trace = np.trace(cov)
         if normalize_trace and trace > EPS:
             cov = cov / trace
+        if shrinkage > 0:
+            diag_cov = np.diag(np.diag(cov))
+            cov = (1.0 - shrinkage) * cov + shrinkage * diag_cov
         if eps > 0:
             scale = np.trace(cov) / n_channels
             cov = cov + eps * max(float(scale), EPS) * eye
@@ -311,8 +339,13 @@ def bandpower_logvar_features(filtered: np.ndarray) -> np.ndarray:
     return np.concatenate([np.log(var), np.log(power), rms], axis=1)
 
 
-def covariance_upper_features(filtered: np.ndarray) -> np.ndarray:
-    covs = trial_covariances(filtered, normalize_trace=True, eps=1e-3)
+def covariance_upper_features(filtered: np.ndarray, config: Config) -> np.ndarray:
+    covs = trial_covariances(
+        filtered,
+        normalize_trace=trace_norm_for_config(config, default_for_family=True),
+        eps=config.cov_eps,
+        shrinkage=config.cov_shrinkage,
+    )
     iu = np.triu_indices(filtered.shape[1])
     return covs[:, iu[0], iu[1]]
 
@@ -380,7 +413,20 @@ def fit_feature_state(train_x: np.ndarray, y: np.ndarray, config: Config, sfreq:
     elif config.feature_family == "tangent":
         refs = {}
         for band_name, x_band in filtered_bands(train_x, config, sfreq, filter_order).items():
-            refs[band_name] = np.mean(trial_covariances(x_band, normalize_trace=False, eps=1e-3), axis=0)
+            if config.tangent_ref == "identity":
+                refs[band_name] = np.eye(x_band.shape[1], dtype=np.float64)
+            elif config.tangent_ref == "mean":
+                refs[band_name] = np.mean(
+                    trial_covariances(
+                        x_band,
+                        normalize_trace=trace_norm_for_config(config, default_for_family=False),
+                        eps=config.cov_eps,
+                        shrinkage=config.cov_shrinkage,
+                    ),
+                    axis=0,
+                )
+            else:
+                raise ValueError(f"Unknown tangent_ref: {config.tangent_ref}")
         state.tangent_refs = refs
     return state
 
@@ -393,7 +439,7 @@ def transform_features(x: np.ndarray, state: FeatureState) -> np.ndarray:
     if config.feature_family == "bandpower_logvar":
         return np.concatenate([bandpower_logvar_features(bands[name]) for name in bands], axis=1).astype(np.float64)
     if config.feature_family == "cov_upper":
-        return np.concatenate([covariance_upper_features(bands[name]) for name in bands], axis=1).astype(np.float64)
+        return np.concatenate([covariance_upper_features(bands[name], config) for name in bands], axis=1).astype(np.float64)
     if config.feature_family == "csp":
         return csp_features(bands, state.csp_filters)
     if config.feature_family == "tangent":
@@ -401,7 +447,12 @@ def transform_features(x: np.ndarray, state: FeatureState) -> np.ndarray:
         for band_name, x_band in bands.items():
             ref_inv = matrix_invsqrt(state.tangent_refs[band_name])
             logs = []
-            for cov in trial_covariances(x_band, normalize_trace=False, eps=1e-3):
+            for cov in trial_covariances(
+                x_band,
+                normalize_trace=trace_norm_for_config(config, default_for_family=False),
+                eps=config.cov_eps,
+                shrinkage=config.cov_shrinkage,
+            ):
                 logs.append(matrix_log(ref_inv @ cov @ ref_inv))
             parts.append(vectorize_symmetric(np.asarray(logs, dtype=np.float64), scale_offdiag=True))
         return np.concatenate(parts, axis=1).astype(np.float64)
@@ -409,20 +460,33 @@ def transform_features(x: np.ndarray, state: FeatureState) -> np.ndarray:
 
 
 def make_model(config: Config, seed: int, max_iter: int):
+    class_weight: str | dict[int, float] = "balanced"
+    if config.priors == "class2_up":
+        class_weight = {0: 1.0, 1: 1.0, 2: 1.2, 3: 1.0}
+    elif config.priors == "class2_down":
+        class_weight = {0: 1.0, 1: 1.0, 2: 0.85, 3: 1.0}
+    elif config.priors != "none":
+        raise ValueError(f"Unknown priors: {config.priors}")
+
     if config.model == "logreg":
         return LogisticRegression(
             C=1.0 if config.C is None else float(config.C),
-            class_weight="balanced",
+            class_weight=class_weight,
             solver="lbfgs",
             max_iter=max_iter,
             random_state=seed,
         )
     if config.model == "lda":
-        return LinearDiscriminantAnalysis(solver="lsqr", shrinkage="auto")
+        priors = None
+        if config.priors == "class2_up":
+            priors = np.asarray([0.24, 0.24, 0.28, 0.24], dtype=np.float64)
+        elif config.priors == "class2_down":
+            priors = np.asarray([0.26, 0.26, 0.22, 0.26], dtype=np.float64)
+        return LinearDiscriminantAnalysis(solver="lsqr", shrinkage="auto", priors=priors)
     if config.model == "linear_svc":
         return LinearSVC(
             C=1.0 if config.C is None else float(config.C),
-            class_weight="balanced",
+            class_weight=class_weight,
             max_iter=max_iter * 5,
             random_state=seed,
         )
@@ -568,6 +632,10 @@ def evaluate_config(
     pred = np.concatenate(all_pred)
     probs = np.concatenate(all_probs)
     class_f1_values = f1_score(true, pred, average=None, labels=LABELS, zero_division=0)
+    prior_quota = quota_from_distribution(distribution(true), len(pred))
+    prior_pred = quota_assign(probs, prior_quota)
+    prior_macro_f1 = f1_score(true, prior_pred, average="macro", labels=LABELS, zero_division=0)
+    prior_accuracy = accuracy_score(true, prior_pred)
     sorted_probs = np.sort(probs, axis=1)
     confidence = sorted_probs[:, -1]
     margin = sorted_probs[:, -1] - sorted_probs[:, -2]
@@ -600,6 +668,10 @@ def evaluate_config(
         mean_confidence=float(np.mean(confidence)),
         mean_margin=float(np.mean(margin)),
         low_confidence_rate=float(np.mean(margin < 0.15)),
+        prior_macro_f1=float(prior_macro_f1),
+        prior_accuracy=float(prior_accuracy),
+        prior_changes=int(np.sum(prior_pred != pred)),
+        prior_pred_distribution=distribution(prior_pred),
         per_subject=per_subject,
         oof_ids=oof_ids,
         oof_true=true,
@@ -628,7 +700,22 @@ def make_configs() -> list[Config]:
         Config("cov_subject_lda", "none", "none", "alpha_beta_broad", "cov_upper", "subject", "lda", None),
         Config("cov_robust_lda", "robust_subject", "none", "alpha_beta_broad", "cov_upper", "robust_subject", "lda", None),
         Config("cov_align_subject_lda", "subject_standard", "euclidean", "alpha_beta_broad", "cov_upper", "subject", "lda", None),
+        Config("cov_align_subject_lda_eps1e4", "subject_standard", "euclidean", "alpha_beta_broad", "cov_upper", "subject", "lda", None, cov_eps=1e-4),
+        Config("cov_align_subject_lda_eps3e3", "subject_standard", "euclidean", "alpha_beta_broad", "cov_upper", "subject", "lda", None, cov_eps=3e-3),
+        Config("cov_align_subject_lda_shrink05", "subject_standard", "euclidean", "alpha_beta_broad", "cov_upper", "subject", "lda", None, cov_shrinkage=0.05),
+        Config("cov_align_subject_lda_class2_up", "subject_standard", "euclidean", "alpha_beta_broad", "cov_upper", "subject", "lda", None, priors="class2_up"),
+        Config("cov_align_subject_lda_class2_down", "subject_standard", "euclidean", "alpha_beta_broad", "cov_upper", "subject", "lda", None, priors="class2_down"),
+        Config("cov_broad_subject_lda", "none", "none", "broad_only", "cov_upper", "subject", "lda", None),
+        Config("cov_broad_align_subject_lda", "subject_standard", "euclidean", "broad_only", "cov_upper", "subject", "lda", None),
         Config("tangent_broad_lda", "none", "none", "broad_only", "tangent", "subject", "lda", None),
+        Config("tangent_broad_lda_eps1e4", "none", "none", "broad_only", "tangent", "subject", "lda", None, cov_eps=1e-4),
+        Config("tangent_broad_lda_eps3e3", "none", "none", "broad_only", "tangent", "subject", "lda", None, cov_eps=3e-3),
+        Config("tangent_broad_trace_lda", "none", "none", "broad_only", "tangent", "subject", "lda", None, cov_trace_norm="trace"),
+        Config("tangent_broad_shrink05_lda", "none", "none", "broad_only", "tangent", "subject", "lda", None, cov_shrinkage=0.05),
+        Config("tangent_broad_identity_lda", "none", "none", "broad_only", "tangent", "subject", "lda", None, tangent_ref="identity"),
+        Config("tangent_broad_lda_class2_up", "none", "none", "broad_only", "tangent", "subject", "lda", None, priors="class2_up"),
+        Config("tangent_broad_lda_class2_down", "none", "none", "broad_only", "tangent", "subject", "lda", None, priors="class2_down"),
+        Config("tangent_broad_logreg_C02", "none", "none", "broad_only", "tangent", "subject", "logreg", 0.2),
         Config("tangent_broad_robust_lda", "robust_subject", "none", "broad_only", "tangent", "robust_subject", "lda", None),
         Config("tangent_broad_align_lda", "subject_standard", "euclidean", "broad_only", "tangent", "subject", "lda", None),
         Config("tangent_alpha_beta_broad_lda", "none", "none", "alpha_beta_broad", "tangent", "subject", "lda", None),
@@ -660,6 +747,11 @@ def config_to_dict(config: Config) -> dict[str, Any]:
         "model": config.model,
         "C": config.C,
         "csp_components": config.csp_components,
+        "cov_eps": config.cov_eps,
+        "cov_shrinkage": config.cov_shrinkage,
+        "cov_trace_norm": config.cov_trace_norm,
+        "tangent_ref": config.tangent_ref,
+        "priors": config.priors,
     }
 
 
@@ -679,6 +771,12 @@ def write_results(records: Sequence[EvalRecord], path: Path) -> None:
         "mean_confidence",
         "mean_margin",
         "low_confidence_rate",
+        "prior_macro_f1",
+        "prior_accuracy",
+        "prior_changes",
+        "prior_pred_distribution",
+        "class2_true_row",
+        "class2_most_confused_with",
         "true_distribution",
         "pred_distribution",
         "confusion",
@@ -704,6 +802,14 @@ def write_results(records: Sequence[EvalRecord], path: Path) -> None:
                     "mean_confidence": f"{record.mean_confidence:.8f}",
                     "mean_margin": f"{record.mean_margin:.8f}",
                     "low_confidence_rate": f"{record.low_confidence_rate:.8f}",
+                    "prior_macro_f1": f"{record.prior_macro_f1:.8f}",
+                    "prior_accuracy": f"{record.prior_accuracy:.8f}",
+                    "prior_changes": record.prior_changes,
+                    "prior_pred_distribution": json.dumps(record.prior_pred_distribution, sort_keys=True),
+                    "class2_true_row": json.dumps(record.confusion[2].tolist()),
+                    "class2_most_confused_with": int(
+                        max([label for label in LABELS if label != 2], key=lambda label: record.confusion[2, label])
+                    ),
                     "true_distribution": json.dumps(record.true_distribution, sort_keys=True),
                     "pred_distribution": json.dumps(record.pred_distribution, sort_keys=True),
                     "confusion": json.dumps(record.confusion.tolist()),
@@ -907,15 +1013,34 @@ def guardrail_notes(ids: np.ndarray, labels: np.ndarray) -> list[str]:
     return notes
 
 
+def probability_diagnostics(probs: np.ndarray) -> dict[str, float]:
+    sorted_probs = np.sort(probs, axis=1)
+    margin = sorted_probs[:, -1] - sorted_probs[:, -2]
+    return {
+        "mean_confidence": float(np.mean(sorted_probs[:, -1])),
+        "mean_margin": float(np.mean(margin)),
+        "low_margin_rate": float(np.mean(margin < 0.15)),
+    }
+
+
 def print_candidate_summary(
     name: str,
     path: Path,
     ids: np.ndarray,
     labels: np.ndarray,
     references: dict[str, np.ndarray],
+    probs: np.ndarray | None = None,
 ) -> None:
     print(f"\n{name}: {path}")
     print(f"  distribution: {distribution(labels)}")
+    if probs is not None:
+        diag = probability_diagnostics(probs)
+        print(
+            "  confidence: "
+            f"mean={diag['mean_confidence']:.4f}, "
+            f"margin={diag['mean_margin']:.4f}, "
+            f"low_margin_rate={diag['low_margin_rate']:.4f}"
+        )
     identical = [ref_name for ref_name, ref_labels in references.items() if np.array_equal(labels, ref_labels)]
     print(f"  identical to previous: {', '.join(identical) if identical else 'none'}")
     for ref_name, ref_labels in references.items():
@@ -932,7 +1057,16 @@ def write_candidate_summary(
     references: dict[str, np.ndarray],
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fields = ["name", "path", "distribution", "guardrails", "changed_from_base"]
+    fields = [
+        "name",
+        "path",
+        "distribution",
+        "mean_confidence",
+        "mean_margin",
+        "low_margin_rate",
+        "guardrails",
+        "changed_from_base",
+    ]
     fields.extend(f"hamming_to_{Path(name).stem}" for name in references)
     with path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
@@ -970,6 +1104,10 @@ def save_checkpoint(path: Path, pipeline: FittedPipeline, eval_record: EvalRecor
             "mean_confidence": eval_record.mean_confidence,
             "mean_margin": eval_record.mean_margin,
             "low_confidence_rate": eval_record.low_confidence_rate,
+            "prior_macro_f1": eval_record.prior_macro_f1,
+            "prior_accuracy": eval_record.prior_accuracy,
+            "prior_changes": eval_record.prior_changes,
+            "prior_pred_distribution": eval_record.prior_pred_distribution,
         },
     }
     joblib.dump(checkpoint, path)
@@ -1015,6 +1153,11 @@ def main() -> None:
         )
         print(f"   class_f1={record.class_f1}")
         print(f"   confusion={record.confusion.tolist()}")
+        print(
+            f"   prior_decode: macro_f1={record.prior_macro_f1:.4f}, "
+            f"acc={record.prior_accuracy:.4f}, changes={record.prior_changes}, "
+            f"dist={record.prior_pred_distribution}"
+        )
 
     best_record = records[0]
     best_pipeline = fit_final_pipeline(subjects, best_record.config, args)
@@ -1041,10 +1184,15 @@ def main() -> None:
         f"{len(changed_rows(test_ids, ensemble_labels, validation_prior_labels))}"
     )
 
-    candidates: list[tuple[str, Path, np.ndarray]] = [
-        ("stable_single", args.output_dir / "submission_task2_robust_stable_single.csv", single_labels),
-        ("robust_ensemble", args.output_dir / "submission_task2_robust_ensemble.csv", ensemble_labels),
-        ("validation_prior_ensemble", args.output_dir / "submission_task2_robust_valprior.csv", validation_prior_labels),
+    candidates: list[tuple[str, Path, np.ndarray, np.ndarray]] = [
+        ("stable_single", args.output_dir / "submission_task2_robust_stable_single.csv", single_labels, single_probs),
+        ("robust_ensemble", args.output_dir / "submission_task2_robust_ensemble.csv", ensemble_labels, ensemble_probs),
+        (
+            "validation_prior_ensemble",
+            args.output_dir / "submission_task2_robust_valprior.csv",
+            validation_prior_labels,
+            ensemble_probs,
+        ),
     ]
 
     reference_paths = [
@@ -1060,13 +1208,17 @@ def main() -> None:
 
     print("\n=== Generated candidates ===")
     candidate_summary_rows = []
-    for name, path, labels in candidates:
+    for name, path, labels, probs in candidates:
         write_submission(path, test_ids, labels)
-        print_candidate_summary(name, path, test_ids, labels, references)
+        print_candidate_summary(name, path, test_ids, labels, references, probs)
+        diag = probability_diagnostics(probs)
         row = {
             "name": name,
             "path": str(path),
             "distribution": json.dumps(distribution(labels), sort_keys=True),
+            "mean_confidence": f"{diag['mean_confidence']:.8f}",
+            "mean_margin": f"{diag['mean_margin']:.8f}",
+            "low_margin_rate": f"{diag['low_margin_rate']:.8f}",
             "guardrails": "; ".join(guardrail_notes(test_ids, labels)),
             "changed_from_base": (
                 ""
@@ -1085,7 +1237,7 @@ def main() -> None:
         "submission_task2_robust_valprior.csv",
         "submission_task2_robust_stable_single.csv",
     ]
-    available = {path.name for _, path, _ in candidates}
+    available = {path.name for _, path, _, _ in candidates}
     for idx, file_name in enumerate([name for name in order if name in available], start=1):
         print(f"  {idx}. {file_name}")
     print(f"\nWrote LOSO table to {args.results_csv}")
