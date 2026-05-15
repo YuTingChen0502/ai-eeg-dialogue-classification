@@ -38,6 +38,7 @@ DEFAULT_CHECKPOINTS = {
 }
 REFERENCE_SUBMISSIONS = {
     "seed42_threshold": PART2_DIR / "submission_bert_repro_seed42_threshold.csv",
+    "seed13_threshold": PART2_DIR / "submission_bert_seed13_threshold.csv",
     "avg_multiseed": PART2_DIR / "submission_bert_avg_multiseed.csv",
 }
 
@@ -94,6 +95,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--threshold-step", type=float, default=0.01)
     parser.add_argument("--reconstruct-seeds", default="42,13")
     parser.add_argument("--train-seeds", default="", help="Optional comma-separated extra seeds to train.")
+    parser.add_argument("--common-seeds", default="", help="Optional comma-separated seeds for a fixed train/validation split experiment.")
+    parser.add_argument("--common-split-seed", type=int, default=42, help="Random seed used only to choose the common validation split.")
     parser.add_argument("--skip-reconstruct", action="store_true")
     parser.add_argument("--skip-duplicates", action="store_true")
     parser.add_argument("--max-near-duplicate-candidates", type=int, default=50)
@@ -260,6 +263,58 @@ def predict_checkpoint(
     )
 
 
+def predict_checkpoint_on_split(
+    *,
+    seed: int,
+    checkpoint_dir: Path,
+    train_df: pd.DataFrame,
+    test_df: pd.DataFrame,
+    libs: dict,
+    args: argparse.Namespace,
+    split_seed: int,
+) -> SeedResult:
+    ensure_local_checkpoint(checkpoint_dir)
+    torch = libs["torch"]
+    AutoTokenizer = libs["AutoTokenizer"]
+    AutoModelForSequenceClassification = libs["AutoModelForSequenceClassification"]
+    DataLoader = libs["DataLoader"]
+
+    _, valid_df, valid_indices = split_for_seed(train_df, split_seed, args.valid_size)
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint_dir, local_files_only=True)
+    model = AutoModelForSequenceClassification.from_pretrained(checkpoint_dir, local_files_only=True)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    text_dataset_cls = train_bert.make_datasets_class(libs["Dataset"])
+
+    valid_ds = text_dataset_cls(valid_df["text"], valid_df["label"], tokenizer, args.max_length)
+    test_ds = text_dataset_cls(test_df["text"], None, tokenizer, args.max_length)
+    valid_loader = DataLoader(valid_ds, batch_size=args.batch_size, shuffle=False)
+    test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False)
+    _, valid_probs = train_bert.predict(model, valid_loader, device, torch)
+    _, test_probs = train_bert.predict(model, test_loader, device, torch)
+    valid_labels = valid_df["label"].to_numpy(dtype=int)
+    raw_f1 = f1_score(valid_labels, labels_from_probs(valid_probs, 0.5), average="macro")
+    threshold, threshold_f1 = train_bert.tune_threshold(
+        valid_labels,
+        valid_probs,
+        threshold_min=args.threshold_min,
+        threshold_max=args.threshold_max,
+        threshold_step=args.threshold_step,
+    )
+    return SeedResult(
+        seed=seed,
+        checkpoint_dir=checkpoint_dir,
+        valid_indices=valid_indices,
+        valid_ids=valid_df["id"].astype(str).to_numpy(),
+        valid_labels=valid_labels,
+        valid_probs=valid_probs,
+        test_probs=test_probs,
+        raw_f1=float(raw_f1),
+        threshold=float(threshold),
+        threshold_f1=float(threshold_f1),
+    )
+
+
 def train_seed(
     *,
     seed: int,
@@ -314,6 +369,70 @@ def train_seed(
         checkpoint_dir=output_dir,
         valid_indices=valid_indices,
         valid_ids=valid_split["id"].astype(str).to_numpy(),
+        valid_labels=valid_labels,
+        valid_probs=valid_probs,
+        test_probs=test_probs,
+        raw_f1=float(raw_f1),
+        threshold=float(threshold),
+        threshold_f1=float(threshold_f1),
+    )
+
+
+def train_seed_on_split(
+    *,
+    seed: int,
+    train_df: pd.DataFrame,
+    valid_df: pd.DataFrame,
+    valid_indices: np.ndarray,
+    test_df: pd.DataFrame,
+    libs: dict,
+    args: argparse.Namespace,
+    output_dir: Path,
+) -> SeedResult:
+    torch = libs["torch"]
+    AutoTokenizer = libs["AutoTokenizer"]
+    AutoModelForSequenceClassification = libs["AutoModelForSequenceClassification"]
+    DataLoader = libs["DataLoader"]
+
+    train_bert.set_seed(seed, torch)
+    runtime_args = make_runtime_args(args, output_dir, seed)
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name, local_files_only=True)
+    text_dataset_cls = train_bert.make_datasets_class(libs["Dataset"])
+
+    def model_factory():
+        return AutoModelForSequenceClassification.from_pretrained(
+            args.model_name,
+            num_labels=2,
+            local_files_only=True,
+        )
+
+    model, raw_f1, _, _, valid_probs, valid_labels = train_bert.train_one_split(
+        train_df=train_df,
+        valid_df=valid_df,
+        tokenizer=tokenizer,
+        model_factory=model_factory,
+        text_dataset_cls=text_dataset_cls,
+        libs=libs,
+        args=runtime_args,
+        fold_name=f"common seed {seed}",
+        save_model=True,
+    )
+    threshold, threshold_f1 = train_bert.tune_threshold(
+        valid_labels,
+        valid_probs,
+        threshold_min=args.threshold_min,
+        threshold_max=args.threshold_max,
+        threshold_step=args.threshold_step,
+    )
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    test_ds = text_dataset_cls(test_df["text"], None, tokenizer, args.max_length)
+    test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False)
+    _, test_probs = train_bert.predict(model, test_loader, device, torch)
+    return SeedResult(
+        seed=seed,
+        checkpoint_dir=output_dir,
+        valid_indices=valid_indices,
+        valid_ids=valid_df["id"].astype(str).to_numpy(),
         valid_labels=valid_labels,
         valid_probs=valid_probs,
         test_probs=test_probs,
@@ -681,6 +800,226 @@ def candidate_to_row(candidate: CandidateResult) -> dict[str, object]:
     }
 
 
+def make_common_candidate(
+    *,
+    name: str,
+    path: Path,
+    source: str,
+    members: list[SeedResult],
+    threshold: float,
+    test_probs: np.ndarray,
+    valid_probs: np.ndarray,
+    test_df: pd.DataFrame,
+    references: dict[str, pd.Series | None],
+    recommendation: str,
+    risk_notes: str,
+) -> CandidateResult:
+    valid_labels = members[0].valid_labels
+    raw_f1 = f1_score(valid_labels, labels_from_probs(valid_probs, 0.5), average="macro")
+    tuned_f1 = f1_score(valid_labels, labels_from_probs(valid_probs, threshold), average="macro")
+    return build_candidate(
+        name=name,
+        path=path,
+        source=source,
+        seeds=",".join(str(res.seed) for res in members),
+        probs=test_probs,
+        threshold=threshold,
+        test_df=test_df,
+        validation_raw=float(raw_f1),
+        validation_threshold=float(tuned_f1),
+        validation_kind="true_common_validation",
+        references=references,
+        recommendation=recommendation,
+        risk_notes=risk_notes,
+    )
+
+
+def run_common_split_experiment(
+    *,
+    train_df: pd.DataFrame,
+    test_df: pd.DataFrame,
+    libs: dict,
+    args: argparse.Namespace,
+    references: dict[str, pd.Series | None],
+) -> dict[str, object] | None:
+    common_seeds = parse_seed_list(args.common_seeds)
+    if not common_seeds:
+        return None
+
+    common_dir = args.output_dir / f"common_split_seed_{args.common_split_seed}"
+    common_dir.mkdir(parents=True, exist_ok=True)
+    train_split, valid_split, valid_indices = split_for_seed(train_df, args.common_split_seed, args.valid_size)
+    pd.DataFrame(
+        {
+            "valid_position": np.arange(len(valid_indices)),
+            "train_index": valid_indices,
+            "id": valid_split["id"].astype(str),
+            "label": valid_split["label"].astype(int),
+        }
+    ).to_csv(common_dir / "common_validation_split.csv", index=False)
+
+    common_results: dict[int, SeedResult] = {}
+    for seed in common_seeds:
+        model_dir = common_dir / "models" / f"seed_{seed}"
+        cached = load_seed_artifacts(seed, common_dir, model_dir if model_dir.exists() else None, args)
+        if cached is not None:
+            common_results[seed] = cached
+            print(
+                f"common seed {seed}: loaded saved probabilities "
+                f"raw_f1={cached.raw_f1:.4f} threshold={cached.threshold:.2f} "
+                f"threshold_f1={cached.threshold_f1:.4f}"
+            )
+            continue
+
+        if seed == args.common_split_seed and seed in DEFAULT_CHECKPOINTS and args.common_split_seed == 42:
+            print(f"common seed {seed}: reusing existing checkpoint on split {args.common_split_seed}")
+            result = predict_checkpoint_on_split(
+                seed=seed,
+                checkpoint_dir=DEFAULT_CHECKPOINTS[seed],
+                train_df=train_df,
+                test_df=test_df,
+                libs=libs,
+                args=args,
+                split_seed=args.common_split_seed,
+            )
+        elif model_dir.exists():
+            print(f"common seed {seed}: reconstructing from common checkpoint {model_dir}")
+            result = predict_checkpoint_on_split(
+                seed=seed,
+                checkpoint_dir=model_dir,
+                train_df=train_df,
+                test_df=test_df,
+                libs=libs,
+                args=args,
+                split_seed=args.common_split_seed,
+            )
+        else:
+            print(f"common seed {seed}: training on fixed split seed {args.common_split_seed}")
+            result = train_seed_on_split(
+                seed=seed,
+                train_df=train_split,
+                valid_df=valid_split,
+                valid_indices=valid_indices,
+                test_df=test_df,
+                libs=libs,
+                args=args,
+                output_dir=model_dir,
+            )
+        save_seed_artifacts(result, common_dir)
+        common_results[seed] = result
+        print(
+            f"common seed {seed}: raw_f1={result.raw_f1:.4f} "
+            f"threshold={result.threshold:.2f} threshold_f1={result.threshold_f1:.4f}"
+        )
+
+    candidates: list[CandidateResult] = []
+    for seed, result in sorted(common_results.items()):
+        path = PART2_DIR / f"submission_bert_common_seed{seed}_threshold.csv"
+        candidate = make_common_candidate(
+            name=f"common_seed{seed}_threshold",
+            path=path,
+            source="DistilBERT fixed split threshold tuned",
+            members=[result],
+            threshold=result.threshold,
+            test_probs=result.test_probs,
+            valid_probs=result.valid_probs,
+            test_df=test_df,
+            references=references,
+            recommendation="baseline" if seed == 42 else "compare_before_submission",
+            risk_notes="Single model on the fixed common validation split.",
+        )
+        candidates.append(candidate)
+        if seed == 13:
+            references["common_seed13_threshold"] = pd.read_csv(path)["label"].astype(int)
+
+    ranked = sorted(common_results.values(), key=lambda res: res.threshold_f1, reverse=True)
+    ensemble_specs: list[tuple[str, list[SeedResult]]] = []
+    if 42 in common_results and 13 in common_results:
+        ensemble_specs.append(("common_seed42_seed13_average", [common_results[42], common_results[13]]))
+    if len(ranked) >= 2:
+        ensemble_specs.append(("common_top2_seed_average", ranked[:2]))
+    if len(ranked) >= 3:
+        ensemble_specs.append(("common_top3_seed_average", ranked[:3]))
+    if len(ranked) >= 2:
+        ensemble_specs.append(("common_all_seed_average", ranked))
+
+    seen_specs = set()
+    for name, members in ensemble_specs:
+        key = tuple(sorted(res.seed for res in members))
+        if key in seen_specs:
+            continue
+        seen_specs.add(key)
+        valid_probs = np.mean([res.valid_probs for res in members], axis=0)
+        test_probs = np.mean([res.test_probs for res in members], axis=0)
+        threshold, threshold_f1 = train_bert.tune_threshold(
+            members[0].valid_labels,
+            valid_probs,
+            threshold_min=args.threshold_min,
+            threshold_max=args.threshold_max,
+            threshold_step=args.threshold_step,
+        )
+        path = PART2_DIR / f"submission_bert_{name}.csv"
+        recommendation = "serious_sparse_diagnostic_candidate"
+        risk = "True common-split ensemble; still one holdout split, not full OOF."
+        candidate = make_common_candidate(
+            name=name,
+            path=path,
+            source="DistilBERT fixed split probability average",
+            members=members,
+            threshold=threshold,
+            test_probs=test_probs,
+            valid_probs=valid_probs,
+            test_df=test_df,
+            references=references,
+            recommendation=recommendation,
+            risk_notes=f"{risk} tuned_f1={threshold_f1:.4f}",
+        )
+        candidates.append(candidate)
+
+    summary_df = pd.DataFrame([candidate_to_row(cand) for cand in candidates])
+    summary_df.to_csv(common_dir / "common_candidate_summary.csv", index=False)
+    write_row_comparison(common_dir, test_df, candidates, references)
+
+    best = max(candidates, key=lambda cand: -math.inf if cand.validation_threshold is None else cand.validation_threshold)
+    member_seeds = [int(seed) for seed in best.seeds.split(",") if seed.strip()]
+    best_probs = np.mean([common_results[seed].test_probs for seed in member_seeds], axis=0)
+    pseudo = {
+        "base_candidate": best.name,
+        "confidence_counts": pseudo_label_diagnostics(best_probs),
+        "attempted": False,
+        "result": "Not attempted; common validation exists, but pseudo-labeling still needs a stronger OOF comparison before it is safe.",
+        "recommended": False,
+    }
+    (common_dir / "pseudo_label_diagnostics.json").write_text(json.dumps(pseudo, indent=2), encoding="utf-8")
+
+    summary = {
+        "common_split_seed": args.common_split_seed,
+        "valid_count": int(len(valid_indices)),
+        "seeds": {
+            str(seed): {
+                "raw_macro_f1": res.raw_f1,
+                "threshold": res.threshold,
+                "threshold_macro_f1": res.threshold_f1,
+                "checkpoint_dir": str(res.checkpoint_dir) if res.checkpoint_dir else None,
+            }
+            for seed, res in sorted(common_results.items())
+        },
+        "candidates": [candidate_to_row(cand) for cand in candidates],
+        "best_candidate": candidate_to_row(best),
+    }
+    (common_dir / "common_run_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+    print("\n=== Common-Split Candidate Summary ===")
+    for cand in candidates:
+        print(
+            f"{cand.name}: threshold={cand.threshold:.2f} "
+            f"val={cand.validation_threshold:.4f} distribution={cand.distribution} "
+            f"hamming_seed42={cand.hamming_seed42}"
+        )
+    print(f"Common-split diagnostics saved to {common_dir}")
+    return summary
+
+
 def audit_existing_files(test_df: pd.DataFrame) -> dict[str, object]:
     submissions = []
     for path in sorted(PART2_DIR.glob("submission_*.csv")):
@@ -951,6 +1290,14 @@ def main() -> None:
         }
         (args.output_dir / "pseudo_label_diagnostics.json").write_text(json.dumps(pseudo, indent=2), encoding="utf-8")
 
+    common_summary = run_common_split_experiment(
+        train_df=train_df,
+        test_df=test_df,
+        libs=libs,
+        args=args,
+        references=references,
+    )
+
     run_summary = {
         "data": {
             "train_shape": list(train_df.shape),
@@ -969,6 +1316,7 @@ def main() -> None:
         "candidates": [candidate_to_row(cand) for cand in candidates],
         "duplicate_transfer": duplicate_summary,
         "transfer_candidate": str(transfer_path) if transfer_path else None,
+        "common_split": common_summary,
     }
     (args.output_dir / "run_summary.json").write_text(json.dumps(run_summary, indent=2), encoding="utf-8")
 
