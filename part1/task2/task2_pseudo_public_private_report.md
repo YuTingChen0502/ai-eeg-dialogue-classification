@@ -1,5 +1,16 @@
 # Task 2 pseudo-public/private validation
 
+## Final Task 2 Status
+
+`chen-experiment/task2` is the preserved final Task 2 branch. The task is cross-subject EEG classification, so leave-one-subject-out validation and subject-shift diagnostics are treated as the main local evidence.
+
+The strongest historical public anchors remain:
+
+- `submission_task2_prior_public_adjusted.csv`: distribution `{0:6,1:8,2:9,3:9}`, public `0.68750`.
+- `submission_task2_prior_class2_less.csv`: distribution `{0:6,1:9,2:8,3:9}`, public `0.68750`.
+
+The final diagnostic work emphasizes LOSO validation, tangent/covariance/CSP-related variants, and pseudo-public/private simulation on held-out training subjects. Class 2 remains the weakest class in the diagnostics. Public feedback was used only as a sparse guardrail; no external data, pretrained models, inferred public labels, or real test labels were used for training.
+
 Oracle pseudo-public methods below use labels only inside held-out training-subject simulation.
 They are not legal real-test procedures.
 
