@@ -53,6 +53,9 @@ predictions.*
 predict.*
 results.*
 
+# Task 1 generated diagnostics
+part1/task1/*_summary.json
+
 
 # ============================================================
 # 3. Python / Jupyter cache
