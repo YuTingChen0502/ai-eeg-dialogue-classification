@@ -1,0 +1,18 @@
+{
+  "feature_names": [
+    "nn_max_sim_word",
+    "nn_max_sim_char",
+    "top3_label1_mean_word",
+    "top5_label1_mean_word",
+    "top3_label1_mean_char",
+    "top5_label1_mean_char",
+    "top5_label_agreement_word",
+    "top5_label_agreement_char",
+    "exact_duplicate_flag",
+    "exact_duplicate_label_if_any",
+    "exact_duplicate_count",
+    "near_duplicate_099_flag",
+    "near_duplicate_099_label_if_any",
+    "near_duplicate_099_similarity"
+  ]
+}

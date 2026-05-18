@@ -1,0 +1,30 @@
+{
+  "feature_names": [
+    "ends_with_prep",
+    "ends_with_det",
+    "ends_with_conj",
+    "ends_with_aux",
+    "ends_with_wh",
+    "ends_with_comma",
+    "ends_with_dash",
+    "ends_with_ellipsis",
+    "ends_with_question",
+    "ends_with_period",
+    "ends_with_exclaim",
+    "no_terminal_punct",
+    "starts_with_request",
+    "has_filler",
+    "word_count",
+    "char_count",
+    "log1p_word_count",
+    "short_utterance",
+    "medium_utterance",
+    "long_utterance",
+    "last_token_is_incomplete_group",
+    "last_token_is_function_word",
+    "last_token_len",
+    "comma_count",
+    "question_count",
+    "terminal_punct_present"
+  ]
+}

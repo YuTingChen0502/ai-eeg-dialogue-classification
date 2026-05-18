@@ -1,0 +1,32 @@
+{
+  "feature_names": [
+    "nn_max_sim_word",
+    "nn_max_sim_char",
+    "top3_label1_mean_word",
+    "top5_label1_mean_word",
+    "top3_label1_mean_char",
+    "top5_label1_mean_char",
+    "top5_label_agreement_word",
+    "top5_label_agreement_char",
+    "exact_duplicate_flag",
+    "exact_duplicate_label_if_any",
+    "exact_duplicate_count",
+    "near_duplicate_099_flag",
+    "near_duplicate_099_label_if_any",
+    "near_duplicate_099_similarity"
+  ],
+  "runtime_seconds": 4.307729005813599,
+  "shape_test": [
+    500,
+    14
+  ],
+  "shape_train": [
+    1302,
+    14
+  ],
+  "test_exact_duplicate_rows": 13,
+  "test_near_duplicate_099_rows": 14,
+  "test_retrieval": "full train retrieval; labels used only as stacker features",
+  "train_exact_duplicate_rows": 34,
+  "train_retrieval": "out-of-fold; each validation row retrieves only from that fold's training rows"
+}

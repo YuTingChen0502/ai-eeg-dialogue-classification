@@ -1,0 +1,55 @@
+{
+  "average_score_default_macro_f1": 0.8117377832387747,
+  "average_score_threshold": -0.05719305276870723,
+  "average_score_tuned_macro_f1": 0.8194393580353296,
+  "feature_names": [
+    "word_tfidf_linearsvc",
+    "char_wb_tfidf_linearsvc"
+  ],
+  "models": [
+    {
+      "fold_macro_f1_tuned": [
+        0.7844827586206897,
+        0.7893948126801152,
+        0.8138098951288213,
+        0.8538645597469128,
+        0.7902521008403361
+      ],
+      "name": "word_tfidf_linearsvc",
+      "oof_macro_f1_default_threshold_zero": 0.8021705352612887,
+      "oof_macro_f1_tuned": 0.8023924594240044,
+      "oof_threshold": 0.00493738055229187,
+      "prediction_distribution_at_threshold": {
+        "0": 413,
+        "1": 889
+      }
+    },
+    {
+      "fold_macro_f1_tuned": [
+        0.8162442396313364,
+        0.7892546583850932,
+        0.8268886043533932,
+        0.8593073593073592,
+        0.796078431372549
+      ],
+      "name": "char_wb_tfidf_linearsvc",
+      "oof_macro_f1_default_threshold_zero": 0.8003702185315893,
+      "oof_macro_f1_tuned": 0.8036692636340789,
+      "oof_threshold": -0.008730581998825038,
+      "prediction_distribution_at_threshold": {
+        "0": 409,
+        "1": 893
+      }
+    }
+  ],
+  "runtime_seconds": 9.07991075515747,
+  "shape_test": [
+    500,
+    2
+  ],
+  "shape_train": [
+    1302,
+    2
+  ],
+  "validation": "5-fold StratifiedKFold on train only; test scores averaged across folds."
+}

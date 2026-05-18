@@ -1,0 +1,6 @@
+{
+  "feature_names": [
+    "word_tfidf_linearsvc",
+    "char_wb_tfidf_linearsvc"
+  ]
+}
