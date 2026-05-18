@@ -1,0 +1,143 @@
+{
+  "augmentation_enabled": false,
+  "augmentation_parameters": {
+    "min_keep_tokens": 3,
+    "n_aug_per_complete": 1
+  },
+  "batch_size": 16,
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "epochs": 3,
+  "fold_diagnostics": [
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.5468528920953925,
+        0.26265293901616876,
+        0.11908219077370384
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.8289494659652479,
+        0.9453068330190049,
+        0.9539497954928222
+      ],
+      "fold": 1,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1041,
+      "used_train_size": 1041,
+      "valid_macro_f1_default": 0.9539497954928222,
+      "valid_size": 261
+    },
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.5527396346583511,
+        0.2376244068145752,
+        0.08869723117712772
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.8967906233688173,
+        0.9380743740212905,
+        0.9534842274104438
+      ],
+      "fold": 2,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1041,
+      "used_train_size": 1041,
+      "valid_macro_f1_default": 0.9534842274104438,
+      "valid_size": 261
+    },
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.5566035183993253,
+        0.26800620917117957,
+        0.1394380150419293
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.8431623021786956,
+        0.9490196078431372,
+        0.9531447107586952
+      ],
+      "fold": 3,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1042,
+      "used_train_size": 1042,
+      "valid_macro_f1_default": 0.9531447107586952,
+      "valid_size": 260
+    },
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.5689584269668116,
+        0.26823679606119794,
+        0.10965147885409268
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.8273479423535957,
+        0.9579451345755694,
+        0.9666752114842349
+      ],
+      "fold": 4,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1042,
+      "used_train_size": 1042,
+      "valid_macro_f1_default": 0.9666752114842349,
+      "valid_size": 260
+    },
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.5650027881969105,
+        0.24597173748594342,
+        0.09849062832919034
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.8475756948755087,
+        0.9158902691511387,
+        0.9206693324340383
+      ],
+      "fold": 5,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1042,
+      "used_train_size": 1042,
+      "valid_macro_f1_default": 0.9206693324340383,
+      "valid_size": 260
+    }
+  ],
+  "fold_macro_f1_default": [
+    0.9539497954928222,
+    0.9534842274104438,
+    0.9531447107586952,
+    0.9666752114842349,
+    0.9206693324340383
+  ],
+  "fold_macro_f1_default_mean": 0.9495846555160469,
+  "fold_macro_f1_default_std": 0.015330480185211595,
+  "k_folds": 5,
+  "learning_rate": 2e-05,
+  "max_length": 128,
+  "model_name": "distilbert-base-uncased",
+  "model_tag": "distilbert_no_aug",
+  "oof_macro_f1_default": 0.949576577506971,
+  "oof_macro_f1_tuned": 0.9531211422928154,
+  "oof_threshold": 0.6200000000000003,
+  "oom_fallback_used": [],
+  "prediction_distribution_at_threshold": {
+    "0": 463,
+    "1": 839
+  },
+  "runtime_notes": "Final epoch probabilities; threshold tuned on OOF only.",
+  "runtime_seconds": 205.65152955055237,
+  "seed": 42,
+  "weight_decay": 0.01
+}

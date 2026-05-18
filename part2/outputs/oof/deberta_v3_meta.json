@@ -1,0 +1,144 @@
+{
+  "augmentation_enabled": false,
+  "augmentation_parameters": {
+    "min_keep_tokens": 3,
+    "n_aug_per_complete": 1
+  },
+  "batch_size": 16,
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "epochs": 3,
+  "fold_diagnostics": [
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.6822979856621135,
+        0.6410344784910028,
+        0.5731438280958118
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.3916083916083916,
+        0.8993747590391739,
+        0.9505681818181818
+      ],
+      "fold": 1,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1041,
+      "used_train_size": 1041,
+      "valid_macro_f1_default": 0.9505681818181818,
+      "valid_size": 261
+    },
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.6828668903220784,
+        0.6381337543328603,
+        0.5707347718152133
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.3916083916083916,
+        0.933179723502304,
+        0.9337983512999366
+      ],
+      "fold": 2,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1041,
+      "used_train_size": 1041,
+      "valid_macro_f1_default": 0.9337983512999366,
+      "valid_size": 261
+    },
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.682873805363973,
+        0.6498991892193303,
+        0.6020603532140906
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.3911007025761124,
+        0.9114656807899986,
+        0.9379366317096071
+      ],
+      "fold": 3,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1042,
+      "used_train_size": 1042,
+      "valid_macro_f1_default": 0.9379366317096071,
+      "valid_size": 260
+    },
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.6843645888747591,
+        0.635003840381449,
+        0.5677444031744292
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.3911007025761124,
+        0.9367612005642847,
+        0.9583440143552935
+      ],
+      "fold": 4,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1042,
+      "used_train_size": 1042,
+      "valid_macro_f1_default": 0.9583440143552935,
+      "valid_size": 260
+    },
+    {
+      "batch_size": 16,
+      "epoch_losses": [
+        0.6823053052931121,
+        0.6450877325101332,
+        0.58211273225871
+      ],
+      "epoch_valid_macro_f1_default": [
+        0.3911007025761124,
+        0.8823706831548785,
+        0.9039681392622569
+      ],
+      "fold": 5,
+      "grad_accum_steps": 1,
+      "max_length": 128,
+      "oom_attempt_note": "requested",
+      "original_train_size": 1042,
+      "used_train_size": 1042,
+      "valid_macro_f1_default": 0.9039681392622569,
+      "valid_size": 260
+    }
+  ],
+  "fold_macro_f1_default": [
+    0.9505681818181818,
+    0.9337983512999366,
+    0.9379366317096071,
+    0.9583440143552935,
+    0.9039681392622569
+  ],
+  "fold_macro_f1_default_mean": 0.9369230636890551,
+  "fold_macro_f1_default_std": 0.018664750562631238,
+  "fp16_enabled": true,
+  "k_folds": 5,
+  "learning_rate": 2e-05,
+  "max_length": 128,
+  "model_name": "microsoft/deberta-v3-base",
+  "model_tag": "deberta_v3",
+  "oof_macro_f1_default": 0.9369687519109644,
+  "oof_macro_f1_tuned": 0.9389193965586491,
+  "oof_threshold": 0.46000000000000013,
+  "oom_fallback_used": [],
+  "prediction_distribution_at_threshold": {
+    "0": 464,
+    "1": 838
+  },
+  "runtime_notes": "Final epoch probabilities; threshold tuned on OOF only; loaded model parameters cast to fp32 before training.",
+  "runtime_seconds": 452.91561102867126,
+  "seed": 42,
+  "weight_decay": 0.01
+}
