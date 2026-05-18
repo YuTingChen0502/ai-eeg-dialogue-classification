@@ -83,6 +83,7 @@ coverage.xml
 .env
 .envrc
 .venv/
+.venv-part2-cuda/
 venv/
 env/
 ENV/
