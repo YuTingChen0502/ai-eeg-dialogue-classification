@@ -1,57 +1,58 @@
 {
   "best_single_model": {
-    "oof_macro_f1_tuned": 0.9531211422928154,
-    "tag": "distilbert_no_aug",
-    "threshold": 0.6200000000000003
+    "oof_macro_f1_tuned": 0.9687014960573137,
+    "tag": "roberta",
+    "threshold": 0.5100000000000002
   },
   "candidates": [
     {
       "C": 0.3,
-      "default_f1": 0.947792276330222,
+      "default_f1": 0.9636260629855267,
       "fold_macro_f1_default": [
-        0.9623225599486727,
-        0.9532387575940193,
-        0.9271960600220718,
-        0.9709074633545932,
-        0.9246667954413753
+        0.9664265500385902,
+        0.9659001829108962,
+        0.957516339869281,
+        0.9790237999193223,
+        0.9490196078431372
       ],
-      "threshold": 0.6100000000000003,
-      "tuned_f1": 0.9504899253204672
+      "threshold": 0.5400000000000003,
+      "tuned_f1": 0.9644901712243371
     },
     {
       "C": 1.0,
-      "default_f1": 0.9512573582567386,
+      "default_f1": 0.9636632689817655,
       "fold_macro_f1_default": [
-        0.9623225599486727,
-        0.9534842274104438,
-        0.9446255672602762,
-        0.9709074633545932,
-        0.9246667954413753
+        0.9706953244045232,
+        0.9659001829108962,
+        0.957516339869281,
+        0.9748889318137918,
+        0.9490196078431372
       ],
-      "threshold": 0.5000000000000002,
-      "tuned_f1": 0.9512573582567386
+      "threshold": 0.35000000000000003,
+      "tuned_f1": 0.9669756990624969
     },
     {
       "C": 3.0,
-      "default_f1": 0.9513052584336898,
+      "default_f1": 0.9636632689817655,
       "fold_macro_f1_default": [
-        0.9623225599486727,
-        0.9534842274104438,
-        0.9405228758169935,
-        0.9709074633545932,
-        0.929019929019929
+        0.9706953244045232,
+        0.9659001829108962,
+        0.9616638542571143,
+        0.9748889318137918,
+        0.9449143564921201
       ],
-      "threshold": 0.48000000000000015,
-      "tuned_f1": 0.9521213282470229
+      "threshold": 0.3,
+      "tuned_f1": 0.9669756990624969
     }
   ],
-  "chosen_oof_macro_f1": 0.9531211422928154,
-  "chosen_source": "fallback:distilbert_no_aug",
-  "chosen_threshold": 0.6200000000000003,
+  "chosen_oof_macro_f1": 0.9687014960573137,
+  "chosen_source": "fallback:roberta",
+  "chosen_threshold": 0.5100000000000002,
   "fallback_used": true,
   "feature_names": [
     "transformer:distilbert_no_aug",
     "transformer:deberta_v3",
+    "transformer:roberta",
     "classical:word_tfidf_linearsvc",
     "classical:char_wb_tfidf_linearsvc",
     "endpoint:ends_with_prep",
@@ -95,7 +96,7 @@
     "retrieval:near_duplicate_099_label_if_any",
     "retrieval:near_duplicate_099_similarity"
   ],
-  "hamming_vs_rollback_baseline": 10,
+  "hamming_vs_rollback_baseline": 15,
   "notes": [
     "DistilBERT ablation selected no-augmentation version.",
     "Loaded classical features with shape (1302, 2).",
@@ -103,12 +104,11 @@
     "Loaded retrieval features with shape (1302, 14)."
   ],
   "prediction_distribution": {
-    "0": 227,
-    "1": 273
+    "0": 216,
+    "1": 284
   },
-  "runtime_seconds": 1.3159942626953125,
+  "runtime_seconds": 1.2959308624267578,
   "scale_columns": [
-    2,
     3,
     4,
     5,
@@ -149,16 +149,17 @@
     40,
     41,
     42,
-    43
+    43,
+    44
   ],
-  "selected_C": 3.0,
-  "stacker_oof_macro_f1_default": 0.9513052584336898,
-  "stacker_oof_macro_f1_tuned": 0.9521213282470229,
-  "stacker_oof_threshold": 0.48000000000000015,
+  "selected_C": 1.0,
+  "stacker_oof_macro_f1_default": 0.9636632689817655,
+  "stacker_oof_macro_f1_tuned": 0.9669756990624969,
+  "stacker_oof_threshold": 0.35000000000000003,
   "submission_validation": {
     "distribution": {
-      "0": 227,
-      "1": 273
+      "0": 216,
+      "1": 284
     },
     "errors": [],
     "path": "C:\\Coding\\Intro_to_AI\\project1-part2\\part2\\submissions\\submission_stacker_oof.csv",
@@ -170,10 +171,10 @@
   },
   "x_test_shape": [
     500,
-    44
+    45
   ],
   "x_train_shape": [
     1302,
-    44
+    45
   ]
 }

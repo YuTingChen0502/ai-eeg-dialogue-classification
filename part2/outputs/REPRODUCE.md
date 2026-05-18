@@ -19,8 +19,7 @@ All commands use the dedicated CUDA Python executable:
 & "C:\Coding\Intro_to_AI\project1-part2\.venv-part2-cuda\Scripts\python.exe" scripts\run_oof.py --model-name distilbert-base-uncased --model-tag distilbert_no_aug --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune
 & "C:\Coding\Intro_to_AI\project1-part2\.venv-part2-cuda\Scripts\python.exe" scripts\run_oof.py --model-name distilbert-base-uncased --model-tag distilbert --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune --augment-heuristic-splitting
 & "C:\Coding\Intro_to_AI\project1-part2\.venv-part2-cuda\Scripts\python.exe" scripts\run_oof.py --model-name microsoft/deberta-v3-base --model-tag deberta_v3 --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune
-# Optional after the full pipeline works:
-& "C:\Coding\Intro_to_AI\project1-part2\.venv-part2-cuda\Scripts\python.exe" scripts\run_oof.py --model-name roberta-base --model-tag roberta --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune --augment-heuristic-splitting
+& "C:\Coding\Intro_to_AI\project1-part2\.venv-part2-cuda\Scripts\python.exe" scripts\run_oof.py --model-name roberta-base --model-tag roberta --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune
 & "C:\Coding\Intro_to_AI\project1-part2\.venv-part2-cuda\Scripts\python.exe" scripts\classical_oof.py
 & "C:\Coding\Intro_to_AI\project1-part2\.venv-part2-cuda\Scripts\python.exe" scripts\endpoint_features.py
 & "C:\Coding\Intro_to_AI\project1-part2\.venv-part2-cuda\Scripts\python.exe" scripts\retrieval_features.py

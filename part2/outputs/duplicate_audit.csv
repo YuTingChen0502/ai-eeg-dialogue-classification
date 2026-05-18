@@ -41,7 +41,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 39,281,my sister lives in new jer I mean pennsylvania shes been there for about five years now,my sister lives in new jer i mean pennsylvania shes been there for about five years now,1,,False,0,,,no_exact_train_match
 40,414,ah geez I totally forgot to charge my phone before leaving the house,ah geez i totally forgot to charge my phone before leaving the house,1,,False,0,,,no_exact_train_match
 41,1739,going to Yu Garden and then somehow trying to find a,going to yu garden and then somehow trying to find a,0,,False,0,,,no_exact_train_match
-42,1775,Not quite sure,not quite sure,0,,False,0,,,no_exact_train_match
+42,1775,Not quite sure,not quite sure,1,,False,0,,,no_exact_train_match
 43,158,everything about this situation makes me feel so frustrated and I just dont,everything about this situation makes me feel so frustrated and i just dont,0,,False,0,,,no_exact_train_match
 44,1577,the ancient ruins were discovered ... beneath the modern shopping district,the ancient ruins were discovered... beneath the modern shopping district,1,,False,0,,,no_exact_train_match
 45,1479,based on the preliminary results those numbers arent correct we might need to,based on the preliminary results those numbers arent correct we might need to,0,,False,0,,,no_exact_train_match
@@ -59,7 +59,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 57,1041,"I'm checking my order status, my DoorDash order from Thai Palace","i'm checking my order status, my doordash order from thai palace",1,,False,0,,,no_exact_train_match
 58,1710,I need to go from the attraction by 05:00 to the restaurant,i need to go from the attraction by 05:00 to the restaurant,1,,False,0,,,no_exact_train_match
 59,1023,"They changed the requirements, the technical requirements yesterday","they changed the requirements, the technical requirements yesterday",1,,False,0,,,no_exact_train_match
-60,35,Is that time slot still available on friday at,is that time slot still available on friday at,1,,False,0,,,no_exact_train_match
+60,35,Is that time slot still available on friday at,is that time slot still available on friday at,0,,False,0,,,no_exact_train_match
 61,1527,IS there a high end restaurant that serves british cuisine in the same area,is there a high end restaurant that serves british cuisine in the same area,1,,False,0,,,no_exact_train_match
 62,4,Are there any places in the east of town that are recommended to go to? Thanks,are there any places in the east of town that are recommended to go to? thanks,1,,False,0,,,no_exact_train_match
 63,1601,"Could you check order number 78991, and tell me if its","could you check order number 78991, and tell me if its",0,,False,0,,,no_exact_train_match
@@ -77,7 +77,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 75,770,"Oh right, right, just like what happened last summer","oh right, right, just like what happened last summer",1,1,False,1,737,1,diagnostic_only_count_lt_2
 76,1138,"I've updated my shipping address, my NEW shipping address in California","i've updated my shipping address, my new shipping address in california",1,,False,0,,,no_exact_train_match
 77,1762,They've implemented a new recycling program in our office building,they've implemented a new recycling program in our office building,1,1,False,1,1745,1,diagnostic_only_count_lt_2
-78,500,"Well actually, the movie wasn't nearly as scary as everyone said","well actually, the movie wasn't nearly as scary as everyone said",0,,False,0,,,no_exact_train_match
+78,500,"Well actually, the movie wasn't nearly as scary as everyone said","well actually, the movie wasn't nearly as scary as everyone said",1,,False,0,,,no_exact_train_match
 79,307,If we look at the numbers from last- no wait the ones from um hold on,if we look at the numbers from last- no wait the ones from um hold on,0,,False,0,,,no_exact_train_match
 80,1208,she was explaining the process but then something about the workflow is just,she was explaining the process but then something about the workflow is just,0,,False,0,,,no_exact_train_match
 81,1313,"Nothing, I guess. Good bye","nothing, i guess. good bye",1,,False,0,,,no_exact_train_match
@@ -123,7 +123,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 121,1945,youve seen this happen before havent you when the system,youve seen this happen before havent you when the system,0,,False,0,,,no_exact_train_match
 122,348,We need to order fifty- make that seventy-five licenses,we need to order fifty- make that seventy-five licenses,1,,False,0,,,no_exact_train_match
 123,932,Could you tell me more about,could you tell me more about,0,,False,0,,,no_exact_train_match
-124,166,opening this gift and seeing how thoughtful it was makes me feel,opening this gift and seeing how thoughtful it was makes me feel,0,,False,0,,,no_exact_train_match
+124,166,opening this gift and seeing how thoughtful it was makes me feel,opening this gift and seeing how thoughtful it was makes me feel,1,,False,0,,,no_exact_train_match
 125,1763,about those server issues from yesterday werent they supposed to,about those server issues from yesterday werent they supposed to,0,,False,0,,,no_exact_train_match
 126,93,need to process 567 forms by,need to process 567 forms by,0,,False,0,,,no_exact_train_match
 127,1082,Maybe the details,maybe the details,0,,False,0,,,no_exact_train_match
@@ -141,7 +141,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 139,133,Wood you mind checking weather the meeting is still on,wood you mind checking weather the meeting is still on,1,,False,0,,,no_exact_train_match
 140,1227,we should probably look into the way that the users are sort of,we should probably look into the way that the users are sort of,0,,False,0,,,no_exact_train_match
 141,1559,"Great! Send me your address through iMessage, and I'll help","great! send me your address through imessage, and i'll help",1,,False,0,,,no_exact_train_match
-142,1750,Maybe 15:15 work work then. Could you try that,maybe 15:15 work work then. could you try that,0,,False,0,,,no_exact_train_match
+142,1750,Maybe 15:15 work work then. Could you try that,maybe 15:15 work work then. could you try that,1,,False,0,,,no_exact_train_match
 143,1457,I was about to score when the defender suddenly,i was about to score when the defender suddenly,0,,False,0,,,no_exact_train_match
 144,1628,The system detected 347 anomalies during the last scan,the system detected 347 anomalies during the last scan,1,,False,0,,,no_exact_train_match
 145,1981,just before lunch,just before lunch,1,,False,0,,,no_exact_train_match
@@ -173,7 +173,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 171,1356,I was thinking about how friendships sometimes just sort of,i was thinking about how friendships sometimes just sort of,0,,False,0,,,no_exact_train_match
 172,312,"Turn left at the gas- no, right at the gas station, then go straight","turn left at the gas- no, right at the gas station, then go straight",1,,False,0,,,no_exact_train_match
 173,1958,its getting late isnt it and we still have to,its getting late isnt it and we still have to,0,,False,0,,,no_exact_train_match
-174,1798,they must have forgotten about the meeting didnt they,they must have forgotten about the meeting didnt they,0,,False,0,,,no_exact_train_match
+174,1798,they must have forgotten about the meeting didnt they,they must have forgotten about the meeting didnt they,1,,False,0,,,no_exact_train_match
 175,636,somethin tells me we shoulda taken the other route home,somethin tells me we shoulda taken the other route home,1,1,False,1,621,1,diagnostic_only_count_lt_2
 176,533,Prolly shoulda mentioned earlier that I was gonna,prolly shoulda mentioned earlier that i was gonna,0,,False,0,,,no_exact_train_match
 177,304,Could you help me find the uh the thing with the you know where we,could you help me find the uh the thing with the you know where we,0,,False,0,,,no_exact_train_match
@@ -183,7 +183,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 181,1879,The performance metrics look good dont they except for when,the performance metrics look good dont they except for when,0,,False,0,,,no_exact_train_match
 182,70,"Yes, and i would also need a taxi to leave by 1:00","yes, and i would also need a taxi to leave by 1:00",1,,False,0,,,no_exact_train_match
 183,1466,the marketing team suggested I disagree with launching the campaign before the holiday season,the marketing team suggested i disagree with launching the campaign before the holiday season,1,,False,0,,,no_exact_train_match
-184,189,"This report is due tomorrow, I love how the sunset looks from my","this report is due tomorrow, i love how the sunset looks from my",1,,False,0,,,no_exact_train_match
+184,189,"This report is due tomorrow, I love how the sunset looks from my","this report is due tomorrow, i love how the sunset looks from my",0,,False,0,,,no_exact_train_match
 185,267,"Bruh, these documentation updates are straight bussin', no cap fr","bruh, these documentation updates are straight bussin', no cap fr",1,,False,0,,,no_exact_train_match
 186,1836,"We could implement that feature sooner, couldn't we, if we","we could implement that feature sooner, couldn't we, if we",0,,False,0,,,no_exact_train_match
 187,32,thanks for investigating the issue with those,thanks for investigating the issue with those,0,,False,0,,,no_exact_train_match
@@ -192,7 +192,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 190,418,well like if you consider what happened last time with the,well like if you consider what happened last time with the,0,,False,0,,,no_exact_train_match
 191,1606,booking a taxi from the hotel to the restaurant sounds like it's going to be,booking a taxi from the hotel to the restaurant sounds like it's going to be,0,,False,0,,,no_exact_train_match
 192,1773,about that email from corporate wasnt there mention of,about that email from corporate wasnt there mention of,0,,False,0,,,no_exact_train_match
-193,1273,I would like one with internet. What are the price ranges for those,i would like one with internet. what are the price ranges for those,0,,False,0,,,no_exact_train_match
+193,1273,I would like one with internet. What are the price ranges for those,i would like one with internet. what are the price ranges for those,1,,False,0,,,no_exact_train_match
 194,1511,i remember exactly where i was ... when they announced the lunar landing anniversary special,i remember exactly where i was... when they announced the lunar landing anniversary special,1,,False,0,,,no_exact_train_match
 195,1926,we should order pizza for dinner shall we,we should order pizza for dinner shall we,1,,False,0,,,no_exact_train_match
 196,455,sheesh that horror movie kept me awake for three nights straight,sheesh that horror movie kept me awake for three nights straight,1,,False,0,,,no_exact_train_match
@@ -223,7 +223,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 221,1071,"I'd like to modify my reservation, my 8PM reservation for tomorrow","i'd like to modify my reservation, my 8pm reservation for tomorrow",1,,False,0,,,no_exact_train_match
 222,127,Knot sure weather we should proceed with,knot sure weather we should proceed with,0,,False,0,,,no_exact_train_match
 223,1177,"Would you check again for a guesthouse in the moderate price range, in the north with four stars, please","would you check again for a guesthouse in the moderate price range, in the north with four stars, please",1,,False,0,,,no_exact_train_match
-224,814,The guy walks in saying bonjour and next thing you know,the guy walks in saying bonjour and next thing you know,0,,False,0,,,no_exact_train_match
+224,814,The guy walks in saying bonjour and next thing you know,the guy walks in saying bonjour and next thing you know,1,,False,0,,,no_exact_train_match
 225,1095,Would you explain your confidence? Your confidence in this particular answer,would you explain your confidence? your confidence in this particular answer,1,,False,0,,,no_exact_train_match
 226,1100,Let me rephrase my question - rephrase my question more clearly for you,let me rephrase my question - rephrase my question more clearly for you,1,,False,0,,,no_exact_train_match
 227,1045,"We need extra chopsticks, extra chopsticks for the sushi platter","we need extra chopsticks, extra chopsticks for the sushi platter",1,,False,0,,,no_exact_train_match
@@ -240,7 +240,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 238,1402,I started taking notes but then the presentation just kind of,i started taking notes but then the presentation just kind of,0,,False,0,,,no_exact_train_match
 239,1393,"I'm not sure if we should-- I checked, and we definitely need graphing paper","i'm not sure if we should-- i checked, and we definitely need graphing paper",1,,False,0,,,no_exact_train_match
 240,359,"The repository name is project-alpha- correction, project-beta main","the repository name is project-alpha- correction, project-beta main",1,,False,0,,,no_exact_train_match
-241,1663,"Actually, I'm in the mood for Cantonese food. Are there any like that","actually, i'm in the mood for cantonese food. are there any like that",0,,False,0,,,no_exact_train_match
+241,1663,"Actually, I'm in the mood for Cantonese food. Are there any like that","actually, i'm in the mood for cantonese food. are there any like that",1,,False,0,,,no_exact_train_match
 242,1117,"I need to update my payment method, my expired payment method please","i need to update my payment method, my expired payment method please",1,,False,0,,,no_exact_train_match
 243,1465,the board of directors approved I already heard our proposal for international expansion,the board of directors approved i already heard our proposal for international expansion,1,,False,0,,,no_exact_train_match
 244,82,Invoice #RT-789 shows a balance of,invoice #rt-789 shows a balance of,0,,False,0,,,no_exact_train_match
@@ -316,7 +316,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 314,351,We should probably consider updating the uh what's that framework called,we should probably consider updating the uh what's that framework called,0,,False,0,,,no_exact_train_match
 315,1552,I will travel on Thursday. Anything you need,i will travel on thursday. anything you need,1,,False,0,,,no_exact_train_match
 316,962,"We discussed this yesterday, we definitely discussed this in the standup","we discussed this yesterday, we definitely discussed this in the standup",1,,False,0,,,no_exact_train_match
-317,843,my jija says dekho dekho whenever he wants to show something,my jija says dekho dekho whenever he wants to show something,0,,False,0,,,no_exact_train_match
+317,843,my jija says dekho dekho whenever he wants to show something,my jija says dekho dekho whenever he wants to show something,1,,False,0,,,no_exact_train_match
 318,1925,the new policy takes effect next month doesnt it,the new policy takes effect next month doesnt it,1,,False,0,,,no_exact_train_match
 319,11,I prefer to stay in a moderate area,i prefer to stay in a moderate area,1,,False,0,,,no_exact_train_match
 320,1525,the construction project should finish ... before the holiday season begins,the construction project should finish... before the holiday season begins,1,,False,0,,,no_exact_train_match
@@ -368,7 +368,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 366,976,The client approved the design - the FINAL design we sent yesterday,the client approved the design - the final design we sent yesterday,1,,False,0,,,no_exact_train_match
 367,592,lemme think bout how they was tryna explain the,lemme think bout how they was tryna explain the,0,,False,0,,,no_exact_train_match
 368,468,"Ugh, don't even get me started on how the whole situation with","ugh, don't even get me started on how the whole situation with",0,,False,0,,,no_exact_train_match
-369,606,Is there a gastropub in that area instead,is there a gastropub in that area instead,0,,False,0,,,no_exact_train_match
+369,606,Is there a gastropub in that area instead,is there a gastropub in that area instead,1,,False,0,,,no_exact_train_match
 370,1267,"Should we schedule the meeting for-- perfect, I see you've booked it for March 15th","should we schedule the meeting for-- perfect, i see you've booked it for march 15th",1,,False,0,,,no_exact_train_match
 371,1194,i wanted to ask about the project timeline but then i thought maybe we should,i wanted to ask about the project timeline but then i thought maybe we should,0,,False,0,,,no_exact_train_match
 372,1297,"yes, if it has a three star rating","yes, if it has a three star rating",1,,False,0,,,no_exact_train_match
@@ -376,7 +376,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 374,1004,"We should sync with APAC, sync with the Singapore team tomorrow","we should sync with apac, sync with the singapore team tomorrow",1,,False,0,,,no_exact_train_match
 375,1910,they should arrive soon shouldnt they assuming that,they should arrive soon shouldnt they assuming that,0,,False,0,,,no_exact_train_match
 376,866,mans really pulled up saying assalamu alaikum and then,mans really pulled up saying assalamu alaikum and then,0,,False,0,,,no_exact_train_match
-377,819,she really said gracias amor and dipped from the function,she really said gracias amor and dipped from the function,0,,False,0,,,no_exact_train_match
+377,819,she really said gracias amor and dipped from the function,she really said gracias amor and dipped from the function,1,,False,0,,,no_exact_train_match
 378,266,"Yo, the way this code review is dragging on and nobody's even addressing the main","yo, the way this code review is dragging on and nobody's even addressing the main",0,,False,0,,,no_exact_train_match
 379,1933,thinking about the party size and whether to include,thinking about the party size and whether to include,0,,False,0,,,no_exact_train_match
 380,1038,I'd like the pasta - the SPICY pasta with shrimp please,i'd like the pasta - the spicy pasta with shrimp please,1,,False,0,,,no_exact_train_match
@@ -388,12 +388,12 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 386,1883,going to Don Pasquale and I need to figure out the best route but,going to don pasquale and i need to figure out the best route but,0,,False,0,,,no_exact_train_match
 387,1059,"We ordered takeout, takeout for pickup at 6:30PM tonight","we ordered takeout, takeout for pickup at 6:30pm tonight",1,,False,0,,,no_exact_train_match
 388,1352,"Should we ask the professor about-- wait, it's explained in the syllabus now","should we ask the professor about-- wait, it's explained in the syllabus now",1,,False,0,,,no_exact_train_match
-389,1694,The center of town would be best,the center of town would be best,0,,False,0,,,no_exact_train_match
+389,1694,The center of town would be best,the center of town would be best,1,,False,0,,,no_exact_train_match
 390,466,"Well actually, if you think about what Sarah said regarding the","well actually, if you think about what sarah said regarding the",0,,False,0,,,no_exact_train_match
 391,197,"Thanks, can I also have the phone number and postcode","thanks, can i also have the phone number and postcode",1,,False,0,,,no_exact_train_match
 392,1037,They're migrating the database the database where we keep all the,they're migrating the database the database where we keep all the,0,,False,0,,,no_exact_train_match
 393,1098,I submitted my request my support request three days ago but,i submitted my request my support request three days ago but,0,,False,0,,,no_exact_train_match
-394,1056,I'm working on that analysis that analysis about the market,i'm working on that analysis that analysis about the market,1,,False,0,,,no_exact_train_match
+394,1056,I'm working on that analysis that analysis about the market,i'm working on that analysis that analysis about the market,0,,False,0,,,no_exact_train_match
 395,1985,from the grocery store,from the grocery store,1,1,False,1,1961,1,diagnostic_only_count_lt_2
 396,1285,"Do you think we should wait for-- no, I confirm all stakeholders have responded","do you think we should wait for-- no, i confirm all stakeholders have responded",1,,False,0,,,no_exact_train_match
 397,119,"I would like to find a hotel, preferable one that is moderately priced","i would like to find a hotel, preferable one that is moderately priced",1,,False,0,,,no_exact_train_match
@@ -425,7 +425,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 423,520,Imma hafta go to the store real quick for some groceries,imma hafta go to the store real quick for some groceries,1,,False,0,,,no_exact_train_match
 424,423,thank you team for reviewing those files that we,thank you team for reviewing those files that we,0,,False,0,,,no_exact_train_match
 425,1472,um so regarding those changes we discussed during yesterdays call I was wondering if you might be able to explain why the team,um so regarding those changes we discussed during yesterdays call i was wondering if you might be able to explain why the team,0,,False,0,,,no_exact_train_match
-426,479,Phew! That presentation went way better than I expected it would,phew! that presentation went way better than i expected it would,0,,False,0,,,no_exact_train_match
+426,479,Phew! That presentation went way better than I expected it would,phew! that presentation went way better than i expected it would,1,,False,0,,,no_exact_train_match
 427,1388,Flight AC419 will depart at 3:45 PM from Gate B7,flight ac419 will depart at 3:45 pm from gate b7,1,,False,0,,,no_exact_train_match
 428,968,Mark's team - I mean Mark's WHOLE team - will be there tomorrow,mark's team - i mean mark's whole team - will be there tomorrow,1,,False,0,,,no_exact_train_match
 429,1484,students who participate in extracurricular activities mine dont tend to perform better academically,students who participate in extracurricular activities mine dont tend to perform better academically,1,,False,0,,,no_exact_train_match
@@ -455,7 +455,7 @@ test_row_index,test_id,original_text,normalized_text,base_label,override_label,a
 453,563,signing off for today bye see you tomorrow,signing off for today bye see you tomorrow,1,,False,0,,,no_exact_train_match
 454,443,wow hold on I just remembered something about when we,wow hold on i just remembered something about when we,0,,False,0,,,no_exact_train_match
 455,1234,the team suggested we should i got confirmation from management to proceed,the team suggested we should i got confirmation from management to proceed,1,,False,0,,,no_exact_train_match
-456,53,"I was thinking about going to Byard Art, can you tell me the address and what the entrance fee is","i was thinking about going to byard art, can you tell me the address and what the entrance fee is",0,,False,0,,,no_exact_train_match
+456,53,"I was thinking about going to Byard Art, can you tell me the address and what the entrance fee is","i was thinking about going to byard art, can you tell me the address and what the entrance fee is",1,,False,0,,,no_exact_train_match
 457,581,"She likes music and art, but I'm not sure what to","she likes music and art, but i'm not sure what to",0,,False,0,,,no_exact_train_match
 458,1905,"Signing off, bye bye! Everything's set for tomorrow's meeting","signing off, bye bye! everything's set for tomorrow's meeting",1,,False,0,,,no_exact_train_match
 459,1147,could you help me understand why the reports are so i mean the way that they,could you help me understand why the reports are so i mean the way that they,0,,False,0,,,no_exact_train_match

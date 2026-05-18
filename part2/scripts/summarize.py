@@ -59,8 +59,7 @@ def _commands() -> str:
         f"{p} scripts\\run_oof.py --model-name distilbert-base-uncased --model-tag distilbert_no_aug --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune",
         f"{p} scripts\\run_oof.py --model-name distilbert-base-uncased --model-tag distilbert --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune --augment-heuristic-splitting",
         f"{p} scripts\\run_oof.py --model-name microsoft/deberta-v3-base --model-tag deberta_v3 --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune",
-        "# Optional after the full pipeline works:",
-        f"{p} scripts\\run_oof.py --model-name roberta-base --model-tag roberta --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune --augment-heuristic-splitting",
+        f"{p} scripts\\run_oof.py --model-name roberta-base --model-tag roberta --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune",
         f"{p} scripts\\classical_oof.py",
         f"{p} scripts\\endpoint_features.py",
         f"{p} scripts\\retrieval_features.py",
@@ -153,7 +152,7 @@ def main() -> None:
     snippet = (
         "The final Part 2 system extends the required stable TF-IDF + SVM baseline with an auditable heuristic "
         "splitting ablation as the advanced balancing experiment; because it hurt OOF Macro-F1, final transformer "
-        "OOF probabilities use the no-augmentation folds from fine-tuned DistilBERT and DeBERTa-v3-base. "
+        "OOF probabilities use the no-augmentation folds from fine-tuned DistilBERT, DeBERTa-v3-base, and RoBERTa-base. "
         "Classical TF-IDF/SVM scores, endpoint linguistic cues, and leakage-safe retrieval features "
         "are combined in an OOF LogisticRegression stacker with threshold tuning performed only on OOF predictions. "
         "A conservative exact-duplicate consistency check is applied only when a test text exactly matches a unanimous "

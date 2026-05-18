@@ -6,12 +6,12 @@
   "conflicting_train_group_rows": 0,
   "diagnostic_exact_match_rows": 13,
   "distribution_after": {
-    "0": 227,
-    "1": 273
+    "0": 216,
+    "1": 284
   },
   "distribution_before": {
-    "0": 227,
-    "1": 273
+    "0": 216,
+    "1": 284
   },
   "final_output": "C:\\Coding\\Intro_to_AI\\project1-part2\\part2\\submissions\\submission_final.csv",
   "safe_override_rule": [

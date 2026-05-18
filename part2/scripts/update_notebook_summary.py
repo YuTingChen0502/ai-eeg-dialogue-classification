@@ -59,6 +59,7 @@ def main() -> None:
             f'& "{PYTHON_EXE}" scripts\\preflight.py',
             f'& "{PYTHON_EXE}" scripts\\run_oof.py --model-name distilbert-base-uncased --model-tag distilbert --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune --augment-heuristic-splitting',
             f'& "{PYTHON_EXE}" scripts\\run_oof.py --model-name microsoft/deberta-v3-base --model-tag deberta_v3 --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune',
+            f'& "{PYTHON_EXE}" scripts\\run_oof.py --model-name roberta-base --model-tag roberta --k-folds 5 --epochs 3 --batch-size 16 --max-length 128 --seed 42 --learning-rate 2e-5 --weight-decay 0.01 --threshold-tune',
             f'& "{PYTHON_EXE}" scripts\\classical_oof.py',
             f'& "{PYTHON_EXE}" scripts\\endpoint_features.py',
             f'& "{PYTHON_EXE}" scripts\\retrieval_features.py',
