@@ -1,0 +1,23 @@
+{
+  "aborted_due_to_override_guard": false,
+  "applied_override_count": 0,
+  "base_input": "C:\\Coding\\Intro_to_AI\\project1-part2\\part2\\submissions\\submission_stacker_oof.csv",
+  "changed_ids": [],
+  "conflicting_train_group_rows": 0,
+  "diagnostic_exact_match_rows": 13,
+  "distribution_after": {
+    "0": 227,
+    "1": 273
+  },
+  "distribution_before": {
+    "0": 227,
+    "1": 273
+  },
+  "final_output": "C:\\Coding\\Intro_to_AI\\project1-part2\\part2\\submissions\\submission_final.csv",
+  "safe_override_rule": [
+    "test normalized text exactly matches a train group",
+    "train group count >= 2",
+    "train group labels are unanimous",
+    "override differs from current prediction"
+  ]
+}

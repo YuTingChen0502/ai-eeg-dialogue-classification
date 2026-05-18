@@ -1,0 +1,179 @@
+{
+  "best_single_model": {
+    "oof_macro_f1_tuned": 0.9531211422928154,
+    "tag": "distilbert_no_aug",
+    "threshold": 0.6200000000000003
+  },
+  "candidates": [
+    {
+      "C": 0.3,
+      "default_f1": 0.947792276330222,
+      "fold_macro_f1_default": [
+        0.9623225599486727,
+        0.9532387575940193,
+        0.9271960600220718,
+        0.9709074633545932,
+        0.9246667954413753
+      ],
+      "threshold": 0.6100000000000003,
+      "tuned_f1": 0.9504899253204672
+    },
+    {
+      "C": 1.0,
+      "default_f1": 0.9512573582567386,
+      "fold_macro_f1_default": [
+        0.9623225599486727,
+        0.9534842274104438,
+        0.9446255672602762,
+        0.9709074633545932,
+        0.9246667954413753
+      ],
+      "threshold": 0.5000000000000002,
+      "tuned_f1": 0.9512573582567386
+    },
+    {
+      "C": 3.0,
+      "default_f1": 0.9513052584336898,
+      "fold_macro_f1_default": [
+        0.9623225599486727,
+        0.9534842274104438,
+        0.9405228758169935,
+        0.9709074633545932,
+        0.929019929019929
+      ],
+      "threshold": 0.48000000000000015,
+      "tuned_f1": 0.9521213282470229
+    }
+  ],
+  "chosen_oof_macro_f1": 0.9531211422928154,
+  "chosen_source": "fallback:distilbert_no_aug",
+  "chosen_threshold": 0.6200000000000003,
+  "fallback_used": true,
+  "feature_names": [
+    "transformer:distilbert_no_aug",
+    "transformer:deberta_v3",
+    "classical:word_tfidf_linearsvc",
+    "classical:char_wb_tfidf_linearsvc",
+    "endpoint:ends_with_prep",
+    "endpoint:ends_with_det",
+    "endpoint:ends_with_conj",
+    "endpoint:ends_with_aux",
+    "endpoint:ends_with_wh",
+    "endpoint:ends_with_comma",
+    "endpoint:ends_with_dash",
+    "endpoint:ends_with_ellipsis",
+    "endpoint:ends_with_question",
+    "endpoint:ends_with_period",
+    "endpoint:ends_with_exclaim",
+    "endpoint:no_terminal_punct",
+    "endpoint:starts_with_request",
+    "endpoint:has_filler",
+    "endpoint:word_count",
+    "endpoint:char_count",
+    "endpoint:log1p_word_count",
+    "endpoint:short_utterance",
+    "endpoint:medium_utterance",
+    "endpoint:long_utterance",
+    "endpoint:last_token_is_incomplete_group",
+    "endpoint:last_token_is_function_word",
+    "endpoint:last_token_len",
+    "endpoint:comma_count",
+    "endpoint:question_count",
+    "endpoint:terminal_punct_present",
+    "retrieval:nn_max_sim_word",
+    "retrieval:nn_max_sim_char",
+    "retrieval:top3_label1_mean_word",
+    "retrieval:top5_label1_mean_word",
+    "retrieval:top3_label1_mean_char",
+    "retrieval:top5_label1_mean_char",
+    "retrieval:top5_label_agreement_word",
+    "retrieval:top5_label_agreement_char",
+    "retrieval:exact_duplicate_flag",
+    "retrieval:exact_duplicate_label_if_any",
+    "retrieval:exact_duplicate_count",
+    "retrieval:near_duplicate_099_flag",
+    "retrieval:near_duplicate_099_label_if_any",
+    "retrieval:near_duplicate_099_similarity"
+  ],
+  "hamming_vs_rollback_baseline": 10,
+  "notes": [
+    "DistilBERT ablation selected no-augmentation version.",
+    "Loaded classical features with shape (1302, 2).",
+    "Loaded endpoint features with shape (1302, 26).",
+    "Loaded retrieval features with shape (1302, 14)."
+  ],
+  "prediction_distribution": {
+    "0": 227,
+    "1": 273
+  },
+  "runtime_seconds": 1.3159942626953125,
+  "scale_columns": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43
+  ],
+  "selected_C": 3.0,
+  "stacker_oof_macro_f1_default": 0.9513052584336898,
+  "stacker_oof_macro_f1_tuned": 0.9521213282470229,
+  "stacker_oof_threshold": 0.48000000000000015,
+  "submission_validation": {
+    "distribution": {
+      "0": 227,
+      "1": 273
+    },
+    "errors": [],
+    "path": "C:\\Coding\\Intro_to_AI\\project1-part2\\part2\\submissions\\submission_stacker_oof.csv",
+    "shape": [
+      500,
+      2
+    ],
+    "valid": true
+  },
+  "x_test_shape": [
+    500,
+    44
+  ],
+  "x_train_shape": [
+    1302,
+    44
+  ]
+}

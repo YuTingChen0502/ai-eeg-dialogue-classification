@@ -1,0 +1,501 @@
+test_row_index,test_id,original_text,normalized_text,base_label,override_label,applied,train_match_count,train_match_ids,train_match_labels,reason
+0,1608,when considering all the stakeholders involved ... and how they might,when considering all the stakeholders involved... and how they might,0,,False,0,,,no_exact_train_match
+1,334,"We'll release the update March 11- no, March 12th, 2025","we'll release the update march 11- no, march 12th, 2025",1,,False,0,,,no_exact_train_match
+2,1779,"choose one, book it for 4 people and 5 nights starting from monday","choose one, book it for 4 people and 5 nights starting from monday",1,,False,0,,,no_exact_train_match
+3,1015,"We're missing some logs, some debug logs from the production server","we're missing some logs, some debug logs from the production server",1,,False,0,,,no_exact_train_match
+4,1790,I will. Goodbye,i will. goodbye,1,,False,0,,,no_exact_train_match
+5,1635,"Hello, could you help me with information on a train","hello, could you help me with information on a train",1,,False,0,,,no_exact_train_match
+6,358,When handling the API response we should maybe um if the status,when handling the api response we should maybe um if the status,0,,False,0,,,no_exact_train_match
+7,1574,naw i'm good thanks,naw i'm good thanks,1,,False,0,,,no_exact_train_match
+8,700,No thank you that will be all,no thank you that will be all,1,,False,0,,,no_exact_train_match
+9,284,we should meet at the coffee shop by the um you know the one next to the library downtown,we should meet at the coffee shop by the um you know the one next to the library downtown,1,,False,0,,,no_exact_train_match
+10,1042,We need to update the tokens update the tokens before they,we need to update the tokens update the tokens before they,0,,False,0,,,no_exact_train_match
+11,611,I would like the phone number and the post code please,i would like the phone number and the post code please,1,,False,0,,,no_exact_train_match
+12,1173,she was telling me earlier about how the project would be but then she just,she was telling me earlier about how the project would be but then she just,0,,False,0,,,no_exact_train_match
+13,783,I was going through it and she just says c'est la vie innit,i was going through it and she just says c'est la vie innit,1,,False,0,,,no_exact_train_match
+14,687,I also need to book a taxi to commute between the two. I need to get to the restaurant by the booked time,i also need to book a taxi to commute between the two. i need to get to the restaurant by the booked time,1,,False,0,,,no_exact_train_match
+15,727,"Mmhm, yeah, that's exactly what I was telling Sarah about yesterday","mmhm, yeah, that's exactly what i was telling sarah about yesterday",1,,False,0,,,no_exact_train_match
+16,1701,Our book club selected 'The Midnight Garden' for next month's discussion,our book club selected 'the midnight garden' for next month's discussion,1,,False,0,,,no_exact_train_match
+17,1589,the client specifically asked about ... but i wasnt quite clear on,the client specifically asked about... but i wasnt quite clear on,0,,False,0,,,no_exact_train_match
+18,37,"I will need to take a train here from london kings cross, I will need ot get here by 19:45","i will need to take a train here from london kings cross, i will need ot get here by 19:45",1,,False,0,,,no_exact_train_match
+19,243,"We-we tried that new restaurant and, and honestly, it exceeded all expectations","we-we tried that new restaurant and, and honestly, it exceeded all expectations",1,,False,0,,,no_exact_train_match
+20,250,my bestie deadass came through with the most lit birthday surprise no cap,my bestie deadass came through with the most lit birthday surprise no cap,1,,False,0,,,no_exact_train_match
+21,17,Thank you for you help,thank you for you help,1,,False,0,,,no_exact_train_match
+22,1780,thinking about the new project timeline isnt there a way to,thinking about the new project timeline isnt there a way to,0,0,False,1,1777,0,diagnostic_only_count_lt_2
+23,983,"Check your email, your WORK email for the updates","check your email, your work email for the updates",1,,False,0,,,no_exact_train_match
+24,773,thanks team really appreciate your help with debugging,thanks team really appreciate your help with debugging,1,,False,0,,,no_exact_train_match
+25,188,What time will I be arriving if I take the 7:54 train,what time will i be arriving if i take the 7:54 train,1,,False,0,,,no_exact_train_match
+26,144,well if you really want my opinion about the whole situation then you,well if you really want my opinion about the whole situation then you,0,,False,0,,,no_exact_train_match
+27,447,hey speaking of that one time when everybody was trying to,hey speaking of that one time when everybody was trying to,0,,False,0,,,no_exact_train_match
+28,957,have you seen my phone my phone that I was just,have you seen my phone my phone that i was just,0,,False,0,,,no_exact_train_match
+29,1469,I'd like to find a place to go in the center of town,i'd like to find a place to go in the center of town,1,,False,0,,,no_exact_train_match
+30,531,Kinda wish I woulda studied more for that test,kinda wish i woulda studied more for that test,1,,False,0,,,no_exact_train_match
+31,1615,"Your membership ID 78921 expires on April 1st, 2025","your membership id 78921 expires on april 1st, 2025",1,,False,0,,,no_exact_train_match
+32,1032,What time is your happy hour? Your WEEKDAY happy hour specifically,what time is your happy hour? your weekday happy hour specifically,1,,False,0,,,no_exact_train_match
+33,534,Dunno if ya heard bout what happened at the,dunno if ya heard bout what happened at the,0,,False,0,,,no_exact_train_match
+34,1672,While walking through the botanical gardens I noticed some unusual,while walking through the botanical gardens i noticed some unusual,0,,False,0,,,no_exact_train_match
+35,639,wasnt even posed to be here but im glad i came anyway,wasnt even posed to be here but im glad i came anyway,1,,False,0,,,no_exact_train_match
+36,541,Tryna figure out how to work this new phone,tryna figure out how to work this new phone,1,,False,0,,,no_exact_train_match
+37,825,I'm there thinking inshallah everything's good until,i'm there thinking inshallah everything's good until,0,,False,0,,,no_exact_train_match
+38,1950,that sounds like a good plan doesnt it unless we consider,that sounds like a good plan doesnt it unless we consider,0,,False,0,,,no_exact_train_match
+39,281,my sister lives in new jer I mean pennsylvania shes been there for about five years now,my sister lives in new jer i mean pennsylvania shes been there for about five years now,1,,False,0,,,no_exact_train_match
+40,414,ah geez I totally forgot to charge my phone before leaving the house,ah geez i totally forgot to charge my phone before leaving the house,1,,False,0,,,no_exact_train_match
+41,1739,going to Yu Garden and then somehow trying to find a,going to yu garden and then somehow trying to find a,0,,False,0,,,no_exact_train_match
+42,1775,Not quite sure,not quite sure,0,,False,0,,,no_exact_train_match
+43,158,everything about this situation makes me feel so frustrated and I just dont,everything about this situation makes me feel so frustrated and i just dont,0,,False,0,,,no_exact_train_match
+44,1577,the ancient ruins were discovered ... beneath the modern shopping district,the ancient ruins were discovered... beneath the modern shopping district,1,,False,0,,,no_exact_train_match
+45,1479,based on the preliminary results those numbers arent correct we might need to,based on the preliminary results those numbers arent correct we might need to,0,,False,0,,,no_exact_train_match
+46,1278,i need to eat too,i need to eat too,1,,False,0,,,no_exact_train_match
+47,1435,The volleyball team needs to-- looks like they've already chosen their captain,the volleyball team needs to-- looks like they've already chosen their captain,1,,False,0,,,no_exact_train_match
+48,288,please call michael on his cell I mean his office number hes there until six today,please call michael on his cell i mean his office number hes there until six today,1,,False,0,,,no_exact_train_match
+49,1214,im wondering if we could maybe implement the unless theres a better way to,im wondering if we could maybe implement the unless theres a better way to,0,,False,0,,,no_exact_train_match
+50,515,C'mere and lookit what I found in the basement,c'mere and lookit what i found in the basement,1,,False,0,,,no_exact_train_match
+51,1530,virtual reality applications might I disagree completely when users experience,virtual reality applications might i disagree completely when users experience,0,,False,0,,,no_exact_train_match
+52,1947,weve met somewhere before havent we,weve met somewhere before havent we,0,,False,0,,,no_exact_train_match
+53,1232,have you seen the latest um the metrics show significant improvement,have you seen the latest um the metrics show significant improvement,1,,False,0,,,no_exact_train_match
+54,965,I am going to cambridge and I am looking for the cambridge book and print gallery,i am going to cambridge and i am looking for the cambridge book and print gallery,1,,False,0,,,no_exact_train_match
+55,973,"I'm waiting for Jason, Jason from IT Support","i'm waiting for jason, jason from it support",1,,False,0,,,no_exact_train_match
+56,1193,the main concern was that the well actually the data shows improved performance,the main concern was that the well actually the data shows improved performance,1,,False,0,,,no_exact_train_match
+57,1041,"I'm checking my order status, my DoorDash order from Thai Palace","i'm checking my order status, my doordash order from thai palace",1,,False,0,,,no_exact_train_match
+58,1710,I need to go from the attraction by 05:00 to the restaurant,i need to go from the attraction by 05:00 to the restaurant,1,,False,0,,,no_exact_train_match
+59,1023,"They changed the requirements, the technical requirements yesterday","they changed the requirements, the technical requirements yesterday",1,,False,0,,,no_exact_train_match
+60,35,Is that time slot still available on friday at,is that time slot still available on friday at,1,,False,0,,,no_exact_train_match
+61,1527,IS there a high end restaurant that serves british cuisine in the same area,is there a high end restaurant that serves british cuisine in the same area,1,,False,0,,,no_exact_train_match
+62,4,Are there any places in the east of town that are recommended to go to? Thanks,are there any places in the east of town that are recommended to go to? thanks,1,,False,0,,,no_exact_train_match
+63,1601,"Could you check order number 78991, and tell me if its","could you check order number 78991, and tell me if its",0,,False,0,,,no_exact_train_match
+64,1355,"Please book for me, thanks","please book for me, thanks",1,,False,0,,,no_exact_train_match
+65,627,jeet lunch yet cause i was thinkin maybe we,jeet lunch yet cause i was thinkin maybe we,0,,False,0,,,no_exact_train_match
+66,1413,The outdoor pool please,the outdoor pool please,1,,False,0,,,no_exact_train_match
+67,419,Flight DL302 scheduled for 7:45 AM has been delayed due to,flight dl302 scheduled for 7:45 am has been delayed due to,0,,False,0,,,no_exact_train_match
+68,929,we should order lunch order lunch from that new place downtown,we should order lunch order lunch from that new place downtown,1,,False,0,,,no_exact_train_match
+69,1519,democratic processes require let me interject during election cycles when,democratic processes require let me interject during election cycles when,0,,False,0,,,no_exact_train_match
+70,953,I was working on the presentation the presentation where we had to,i was working on the presentation the presentation where we had to,0,,False,0,,,no_exact_train_match
+71,1921,youve backed up your data havent you,youve backed up your data havent you,1,,False,0,,,no_exact_train_match
+72,1646,Let me see about th,let me see about th,0,,False,0,,,no_exact_train_match
+73,213,i i love how the new the new interface looks but when i try to to,i i love how the new the new interface looks but when i try to to,0,,False,0,,,no_exact_train_match
+74,1493,cultural diversity strengthens I have a point organizational innovation and creativity,cultural diversity strengthens i have a point organizational innovation and creativity,1,,False,0,,,no_exact_train_match
+75,770,"Oh right, right, just like what happened last summer","oh right, right, just like what happened last summer",1,1,False,1,737,1,diagnostic_only_count_lt_2
+76,1138,"I've updated my shipping address, my NEW shipping address in California","i've updated my shipping address, my new shipping address in california",1,,False,0,,,no_exact_train_match
+77,1762,They've implemented a new recycling program in our office building,they've implemented a new recycling program in our office building,1,1,False,1,1745,1,diagnostic_only_count_lt_2
+78,500,"Well actually, the movie wasn't nearly as scary as everyone said","well actually, the movie wasn't nearly as scary as everyone said",0,,False,0,,,no_exact_train_match
+79,307,If we look at the numbers from last- no wait the ones from um hold on,if we look at the numbers from last- no wait the ones from um hold on,0,,False,0,,,no_exact_train_match
+80,1208,she was explaining the process but then something about the workflow is just,she was explaining the process but then something about the workflow is just,0,,False,0,,,no_exact_train_match
+81,1313,"Nothing, I guess. Good bye","nothing, i guess. good bye",1,,False,0,,,no_exact_train_match
+82,584,jeet yet cause im starvin after all that exercising,jeet yet cause im starvin after all that exercising,1,,False,0,,,no_exact_train_match
+83,847,fam started speaking patois and mandarin at the function still,fam started speaking patois and mandarin at the function still,0,,False,0,,,no_exact_train_match
+84,1328,Thank you what is the address and what is the pesticide for Bedouln. What fun attractions are near by,thank you what is the address and what is the pesticide for bedouln. what fun attractions are near by,1,,False,0,,,no_exact_train_match
+85,347,So about that merge conflict in the um you know when git,so about that merge conflict in the um you know when git,0,,False,0,,,no_exact_train_match
+86,1942,theyve been married for ten years now havent they,theyve been married for ten years now havent they,1,,False,0,,,no_exact_train_match
+87,907,Yes please. I also need a place to stay in the west with free wifi,yes please. i also need a place to stay in the west with free wifi,1,,False,0,,,no_exact_train_match
+88,993,What time did you schedule it? The 4AM UTC meeting today,what time did you schedule it? the 4am utc meeting today,1,,False,0,,,no_exact_train_match
+89,285,we need to discuss the budget for next uh hold on let me just find the um where did i put,we need to discuss the budget for next uh hold on let me just find the um where did i put,0,,False,0,,,no_exact_train_match
+90,1126,Could you tell me about the warranty the warranty coverage for,could you tell me about the warranty the warranty coverage for,0,,False,0,,,no_exact_train_match
+91,740,"yes, i am also looking for a cinema near the restaurant","yes, i am also looking for a cinema near the restaurant",1,,False,0,,,no_exact_train_match
+92,596,finna show ya this thing i found in the,finna show ya this thing i found in the,0,,False,0,,,no_exact_train_match
+93,551,Was s'posed to tell ya somethin bout the way,was s'posed to tell ya somethin bout the way,0,,False,0,,,no_exact_train_match
+94,130,The reel problem with the system is when it,the reel problem with the system is when it,0,,False,0,,,no_exact_train_match
+95,1573,the data shows an interesting pattern in ... unless im interpreting,the data shows an interesting pattern in... unless im interpreting,0,,False,0,,,no_exact_train_match
+96,269,fr fr the deployment process be taking forever and our PM keeps asking about,fr fr the deployment process be taking forever and our pm keeps asking about,0,,False,0,,,no_exact_train_match
+97,1891,We could implement this solution couldnt we provided that,we could implement this solution couldnt we provided that,0,,False,0,,,no_exact_train_match
+98,299,I was thinking maybe we could um like if you want to but then again,i was thinking maybe we could um like if you want to but then again,0,,False,0,,,no_exact_train_match
+99,664,okay okay now i see what you meant bout the budget,okay okay now i see what you meant bout the budget,1,1,False,1,707,1,diagnostic_only_count_lt_2
+100,1799,the system backup completed successfully didnt it,the system backup completed successfully didnt it,1,,False,0,,,no_exact_train_match
+101,236,"I can't really um explain why but something about the way they, they","i can't really um explain why but something about the way they, they",0,,False,0,,,no_exact_train_match
+102,338,I successfully completed all 347 training modules in the cybersecurity course last week,i successfully completed all 347 training modules in the cybersecurity course last week,1,,False,0,,,no_exact_train_match
+103,1602,The price is $499,the price is $499,1,,False,0,,,no_exact_train_match
+104,874,ey yaar listen carefully to what im about to tell you about,ey yaar listen carefully to what im about to tell you about,0,,False,0,,,no_exact_train_match
+105,1167,would it be possible to maybe lets schedule the meeting for next thursday,would it be possible to maybe lets schedule the meeting for next thursday,1,,False,0,,,no_exact_train_match
+106,741,considering the Jinling Noodle Bar prices and they seem to be um,considering the jinling noodle bar prices and they seem to be um,0,,False,0,,,no_exact_train_match
+107,601,"Actually, I don't need a booking. I just need to know when it arrives, thanks","actually, i don't need a booking. i just need to know when it arrives, thanks",1,,False,0,,,no_exact_train_match
+108,6,How about italian type of food,how about italian type of food,1,,False,0,,,no_exact_train_match
+109,1438,The track meet might get-- weather forecast shows clear skies now,the track meet might get-- weather forecast shows clear skies now,1,,False,0,,,no_exact_train_match
+110,1459,"Right, I'll see you","right, i'll see you",1,,False,0,,,no_exact_train_match
+111,1434,"The basketball game was supposed to-- oh, they moved it to 07:30 tonight","the basketball game was supposed to-- oh, they moved it to 07:30 tonight",1,,False,0,,,no_exact_train_match
+112,1417,I was just about to serve when suddenly the ball,i was just about to serve when suddenly the ball,0,,False,0,,,no_exact_train_match
+113,1185,she was explaining the process but then something about the workflow,she was explaining the process but then something about the workflow,0,,False,0,,,no_exact_train_match
+114,739,"Uh-huh, now the whole situation makes perfect sense","uh-huh, now the whole situation makes perfect sense",1,,False,0,,,no_exact_train_match
+115,589,whatchu think bout the way they fixed the ceiling,whatchu think bout the way they fixed the ceiling,1,,False,0,,,no_exact_train_match
+116,415,"any price range. be a hotel, has free parkin. get me the address too","any price range. be a hotel, has free parkin. get me the address too",1,,False,0,,,no_exact_train_match
+117,1359,We were so close back then but now whenever i try to,we were so close back then but now whenever i try to,0,,False,0,,,no_exact_train_match
+118,1425,"I was trying to sign up for the-- perfect, there's still space in the league","i was trying to sign up for the-- perfect, there's still space in the league",1,,False,0,,,no_exact_train_match
+119,1496,the development team proposed that wont work before the next,the development team proposed that wont work before the next,0,,False,0,,,no_exact_train_match
+120,1073,I notice that your responses your responses sometimes vary when I,i notice that your responses your responses sometimes vary when i,0,,False,0,,,no_exact_train_match
+121,1945,youve seen this happen before havent you when the system,youve seen this happen before havent you when the system,0,,False,0,,,no_exact_train_match
+122,348,We need to order fifty- make that seventy-five licenses,we need to order fifty- make that seventy-five licenses,1,,False,0,,,no_exact_train_match
+123,932,Could you tell me more about,could you tell me more about,0,,False,0,,,no_exact_train_match
+124,166,opening this gift and seeing how thoughtful it was makes me feel,opening this gift and seeing how thoughtful it was makes me feel,0,,False,0,,,no_exact_train_match
+125,1763,about those server issues from yesterday werent they supposed to,about those server issues from yesterday werent they supposed to,0,,False,0,,,no_exact_train_match
+126,93,need to process 567 forms by,need to process 567 forms by,0,,False,0,,,no_exact_train_match
+127,1082,Maybe the details,maybe the details,0,,False,0,,,no_exact_train_match
+128,679,mmkay so if im understanding this part about the,mmkay so if im understanding this part about the,0,,False,0,,,no_exact_train_match
+129,805,No price range but I do want a 4 start,no price range but i do want a 4 start,1,,False,0,,,no_exact_train_match
+130,583,for four people and possibly,for four people and possibly,0,,False,0,,,no_exact_train_match
+131,1617,"Ah, wait. I think i need to check the availabillity first, then we can","ah, wait. i think i need to check the availabillity first, then we can",0,,False,0,,,no_exact_train_match
+132,881,i deadass thought yamete when they started to explain the,i deadass thought yamete when they started to explain the,0,,False,0,,,no_exact_train_match
+133,1445,"I thought the playoffs would-- actually, we qualified for semifinals","i thought the playoffs would-- actually, we qualified for semifinals",1,,False,0,,,no_exact_train_match
+134,947,the manager wanted to discuss wanted to discuss something about the,the manager wanted to discuss wanted to discuss something about the,0,,False,0,,,no_exact_train_match
+135,386,well actually I learned how to ride a bike when I was twelve years old,well actually i learned how to ride a bike when i was twelve years old,1,,False,0,,,no_exact_train_match
+136,185,the internet is so slow right now my sister just got accepted to,the internet is so slow right now my sister just got accepted to,0,,False,0,,,no_exact_train_match
+137,449,ooh wait until you hear what happened when I tried to,ooh wait until you hear what happened when i tried to,0,,False,0,,,no_exact_train_match
+138,717,Any price range is fine,any price range is fine,1,,False,0,,,no_exact_train_match
+139,133,Wood you mind checking weather the meeting is still on,wood you mind checking weather the meeting is still on,1,,False,0,,,no_exact_train_match
+140,1227,we should probably look into the way that the users are sort of,we should probably look into the way that the users are sort of,0,,False,0,,,no_exact_train_match
+141,1559,"Great! Send me your address through iMessage, and I'll help","great! send me your address through imessage, and i'll help",1,,False,0,,,no_exact_train_match
+142,1750,Maybe 15:15 work work then. Could you try that,maybe 15:15 work work then. could you try that,0,,False,0,,,no_exact_train_match
+143,1457,I was about to score when the defender suddenly,i was about to score when the defender suddenly,0,,False,0,,,no_exact_train_match
+144,1628,The system detected 347 anomalies during the last scan,the system detected 347 anomalies during the last scan,1,,False,0,,,no_exact_train_match
+145,1981,just before lunch,just before lunch,1,,False,0,,,no_exact_train_match
+146,934,can you help me locate the document the document that shows,can you help me locate the document the document that shows,0,,False,0,,,no_exact_train_match
+147,154,the movie was a complete waste of time and money I hated every minute,the movie was a complete waste of time and money i hated every minute,1,,False,0,,,no_exact_train_match
+148,762,"Uh-huh, now the whole situation makes perfect sense","uh-huh, now the whole situation makes perfect sense",1,,False,0,,,no_exact_train_match
+149,118,I'd would love to stay for museums in the centre and,i'd would love to stay for museums in the centre and,0,,False,0,,,no_exact_train_match
+150,708,uh huh got it so thats what the boss was talkin bout,uh huh got it so thats what the boss was talkin bout,1,1,False,1,666,1,diagnostic_only_count_lt_2
+151,296,the client wanted us to change the design to make it more um and then add some kind of,the client wanted us to change the design to make it more um and then add some kind of,0,,False,0,,,no_exact_train_match
+152,692,That's great. I'd like to book a table for the same group at 14:15 on the same day,that's great. i'd like to book a table for the same group at 14:15 on the same day,1,,False,0,,,no_exact_train_match
+153,1403,We were supposed to meet at the library but then everyone,we were supposed to meet at the library but then everyone,0,,False,0,,,no_exact_train_match
+154,1959,"any time on friday, arrive by 1515hrs. get me the train id please","any time on friday, arrive by 1515hrs. get me the train id please",1,,False,0,,,no_exact_train_match
+155,766,"Mhm, and then what happened after they said that the","mhm, and then what happened after they said that the",0,,False,0,,,no_exact_train_match
+156,234,"I can't, I can't believe how they, they messed up my order again, so frustrating","i can't, i can't believe how they, they messed up my order again, so frustrating",1,,False,0,,,no_exact_train_match
+157,838,yo fam ngl that concert was mad lit mashallah enjoyed every second,yo fam ngl that concert was mad lit mashallah enjoyed every second,1,,False,0,,,no_exact_train_match
+158,411,wow seriously this coffee shop makes the best caramel macchiato ever,wow seriously this coffee shop makes the best caramel macchiato ever,1,,False,0,,,no_exact_train_match
+159,340,"I've attached Version 3- sorry, Version 4 of the proposal","i've attached version 3- sorry, version 4 of the proposal",1,,False,0,,,no_exact_train_match
+160,795,My mom called saying beta where are you and then she,my mom called saying beta where are you and then she,0,,False,0,,,no_exact_train_match
+161,1859,You've seen the error logs right because there's something,you've seen the error logs right because there's something,0,,False,0,,,no_exact_train_match
+162,1380,I thought maybe we could recreate that photo from when we used to,i thought maybe we could recreate that photo from when we used to,0,,False,0,,,no_exact_train_match
+163,792,Fam I was about to wallahi but then the whole situation,fam i was about to wallahi but then the whole situation,0,,False,0,,,no_exact_train_match
+164,421,hey wait a minute I thought you were going to tell me about,hey wait a minute i thought you were going to tell me about,0,,False,0,,,no_exact_train_match
+165,752,"The problem with that is— Wait, let me rethink this","the problem with that is- wait, let me rethink this",0,,False,0,,,no_exact_train_match
+166,36,Ok great! What type of entertainment is that,ok great! what type of entertainment is that,0,,False,0,,,no_exact_train_match
+167,485,"I just need their address, star level and whether they have internet please","i just need their address, star level and whether they have internet please",1,,False,0,,,no_exact_train_match
+168,981,did you hear about the changes the changes they want to,did you hear about the changes the changes they want to,0,,False,0,,,no_exact_train_match
+169,1835,"The budget limitations are quite strict this year, aren't they, but","the budget limitations are quite strict this year, aren't they, but",0,,False,0,,,no_exact_train_match
+170,1266,do you think we could maybe actually the budget was approved yesterday,do you think we could maybe actually the budget was approved yesterday,1,,False,0,,,no_exact_train_match
+171,1356,I was thinking about how friendships sometimes just sort of,i was thinking about how friendships sometimes just sort of,0,,False,0,,,no_exact_train_match
+172,312,"Turn left at the gas- no, right at the gas station, then go straight","turn left at the gas- no, right at the gas station, then go straight",1,,False,0,,,no_exact_train_match
+173,1958,its getting late isnt it and we still have to,its getting late isnt it and we still have to,0,,False,0,,,no_exact_train_match
+174,1798,they must have forgotten about the meeting didnt they,they must have forgotten about the meeting didnt they,0,,False,0,,,no_exact_train_match
+175,636,somethin tells me we shoulda taken the other route home,somethin tells me we shoulda taken the other route home,1,1,False,1,621,1,diagnostic_only_count_lt_2
+176,533,Prolly shoulda mentioned earlier that I was gonna,prolly shoulda mentioned earlier that i was gonna,0,,False,0,,,no_exact_train_match
+177,304,Could you help me find the uh the thing with the you know where we,could you help me find the uh the thing with the you know where we,0,,False,0,,,no_exact_train_match
+178,1299,"They wanted us to review the-- ah, you've implemented all the changes","they wanted us to review the-- ah, you've implemented all the changes",1,,False,0,,,no_exact_train_match
+179,442,uh yeah so anyway about what we discussed regarding the,uh yeah so anyway about what we discussed regarding the,0,,False,0,,,no_exact_train_match
+180,67,actually uh i was about to order um dessert but,actually uh i was about to order um dessert but,0,,False,0,,,no_exact_train_match
+181,1879,The performance metrics look good dont they except for when,the performance metrics look good dont they except for when,0,,False,0,,,no_exact_train_match
+182,70,"Yes, and i would also need a taxi to leave by 1:00","yes, and i would also need a taxi to leave by 1:00",1,,False,0,,,no_exact_train_match
+183,1466,the marketing team suggested I disagree with launching the campaign before the holiday season,the marketing team suggested i disagree with launching the campaign before the holiday season,1,,False,0,,,no_exact_train_match
+184,189,"This report is due tomorrow, I love how the sunset looks from my","this report is due tomorrow, i love how the sunset looks from my",1,,False,0,,,no_exact_train_match
+185,267,"Bruh, these documentation updates are straight bussin', no cap fr","bruh, these documentation updates are straight bussin', no cap fr",1,,False,0,,,no_exact_train_match
+186,1836,"We could implement that feature sooner, couldn't we, if we","we could implement that feature sooner, couldn't we, if we",0,,False,0,,,no_exact_train_match
+187,32,thanks for investigating the issue with those,thanks for investigating the issue with those,0,,False,0,,,no_exact_train_match
+188,1151,they were supposed to deliver the wait actually they already sent the materials this morning,they were supposed to deliver the wait actually they already sent the materials this morning,1,,False,0,,,no_exact_train_match
+189,1057,I appreciate your help - your step-by-step help with debugging today,i appreciate your help - your step-by-step help with debugging today,1,,False,0,,,no_exact_train_match
+190,418,well like if you consider what happened last time with the,well like if you consider what happened last time with the,0,,False,0,,,no_exact_train_match
+191,1606,booking a taxi from the hotel to the restaurant sounds like it's going to be,booking a taxi from the hotel to the restaurant sounds like it's going to be,0,,False,0,,,no_exact_train_match
+192,1773,about that email from corporate wasnt there mention of,about that email from corporate wasnt there mention of,0,,False,0,,,no_exact_train_match
+193,1273,I would like one with internet. What are the price ranges for those,i would like one with internet. what are the price ranges for those,0,,False,0,,,no_exact_train_match
+194,1511,i remember exactly where i was ... when they announced the lunar landing anniversary special,i remember exactly where i was... when they announced the lunar landing anniversary special,1,,False,0,,,no_exact_train_match
+195,1926,we should order pizza for dinner shall we,we should order pizza for dinner shall we,1,,False,0,,,no_exact_train_match
+196,455,sheesh that horror movie kept me awake for three nights straight,sheesh that horror movie kept me awake for three nights straight,1,,False,0,,,no_exact_train_match
+197,828,bro started speaking deutsch in the middle of his presentation,bro started speaking deutsch in the middle of his presentation,1,,False,0,,,no_exact_train_match
+198,684,considering the 7 options and wondering if maybe,considering the 7 options and wondering if maybe,0,,False,0,,,no_exact_train_match
+199,1081,Um their address,um their address,1,,False,0,,,no_exact_train_match
+200,54,I was thinking about what would happen after I arrive at parkside police station in that black,i was thinking about what would happen after i arrive at parkside police station in that black,0,,False,0,,,no_exact_train_match
+201,252,finna head out to that function but ion even know if its gonna be,finna head out to that function but ion even know if its gonna be,0,,False,0,,,no_exact_train_match
+202,941,my computer keeps freezing keeps freezing when I open too many tabs,my computer keeps freezing keeps freezing when i open too many tabs,1,,False,0,,,no_exact_train_match
+203,1487,if everyone could just I need to say something because the situation requires,if everyone could just i need to say something because the situation requires,0,,False,0,,,no_exact_train_match
+204,764,Yes please for two people at 16:15 on Wednesday please if its not too much trouble,yes please for two people at 16:15 on wednesday please if its not too much trouble,1,,False,0,,,no_exact_train_match
+205,1867,The team's been working overtime havent they but I noticed,the team's been working overtime havent they but i noticed,0,,False,0,,,no_exact_train_match
+206,1,"Book whatever is avaliable, thanks","book whatever is avaliable, thanks",1,,False,0,,,no_exact_train_match
+207,885,my tita kept saying ingat when i was trying to tell her about,my tita kept saying ingat when i was trying to tell her about,0,,False,0,,,no_exact_train_match
+208,1326,"Real quickly, what is the travel time","real quickly, what is the travel time",1,,False,0,,,no_exact_train_match
+209,231,"The way they, um, they handled my complaint was, was absolutely terrible","the way they, um, they handled my complaint was, was absolutely terrible",1,,False,0,,,no_exact_train_match
+210,19,Yes. I want to book 6 people. I need the reference number as well,yes. i want to book 6 people. i need the reference number as well,1,,False,0,,,no_exact_train_match
+211,51,"I'm trying to get in shape and I'm not sure where to start with a workout routine, can you help me","i'm trying to get in shape and i'm not sure where to start with a workout routine, can you help me",1,,False,0,,,no_exact_train_match
+212,591,was boutta tell ya sumthin bout what happened when,was boutta tell ya sumthin bout what happened when,0,,False,0,,,no_exact_train_match
+213,1529,and the hotel reservation details are,and the hotel reservation details are,0,,False,0,,,no_exact_train_match
+214,1972,for my birthday,for my birthday,1,,False,0,,,no_exact_train_match
+215,1729,still considering if there's something else I can help you with today and,still considering if there's something else i can help you with today and,0,,False,0,,,no_exact_train_match
+216,219,No that's all I needed. Thank you,no that's all i needed. thank you,1,,False,0,,,no_exact_train_match
+217,64,"Yes, I'm looking for colleges in the centre","yes, i'm looking for colleges in the centre",1,,False,0,,,no_exact_train_match
+218,1680,The recipe calls for three cups of flour and then you need to,the recipe calls for three cups of flour and then you need to,0,,False,0,,,no_exact_train_match
+219,33,Was thinking about the european option but,was thinking about the european option but,0,,False,0,,,no_exact_train_match
+220,793,Listen yeah mashallah the food was blessed still you get me,listen yeah mashallah the food was blessed still you get me,1,,False,0,,,no_exact_train_match
+221,1071,"I'd like to modify my reservation, my 8PM reservation for tomorrow","i'd like to modify my reservation, my 8pm reservation for tomorrow",1,,False,0,,,no_exact_train_match
+222,127,Knot sure weather we should proceed with,knot sure weather we should proceed with,0,,False,0,,,no_exact_train_match
+223,1177,"Would you check again for a guesthouse in the moderate price range, in the north with four stars, please","would you check again for a guesthouse in the moderate price range, in the north with four stars, please",1,,False,0,,,no_exact_train_match
+224,814,The guy walks in saying bonjour and next thing you know,the guy walks in saying bonjour and next thing you know,0,,False,0,,,no_exact_train_match
+225,1095,Would you explain your confidence? Your confidence in this particular answer,would you explain your confidence? your confidence in this particular answer,1,,False,0,,,no_exact_train_match
+226,1100,Let me rephrase my question - rephrase my question more clearly for you,let me rephrase my question - rephrase my question more clearly for you,1,,False,0,,,no_exact_train_match
+227,1045,"We need extra chopsticks, extra chopsticks for the sushi platter","we need extra chopsticks, extra chopsticks for the sushi platter",1,,False,0,,,no_exact_train_match
+228,1112,My order status shows pending shows pending even though I already,my order status shows pending shows pending even though i already,0,,False,0,,,no_exact_train_match
+229,1703,Great can you book one for 2 people at 16:00 on monday please,great can you book one for 2 people at 16:00 on monday please,1,,False,0,,,no_exact_train_match
+230,1386,The professor mentioned something about extra credit but then,the professor mentioned something about extra credit but then,0,,False,0,,,no_exact_train_match
+231,1699,"Goodbye, but did anyone check why the tests are still","goodbye, but did anyone check why the tests are still",0,,False,0,,,no_exact_train_match
+232,1499,Nope. That should cover it,nope. that should cover it,1,,False,0,,,no_exact_train_match
+233,140,yeah I definitely need to schedule that dentist appointment for next Tuesday at 2 pm,yeah i definitely need to schedule that dentist appointment for next tuesday at 2 pm,1,,False,0,,,no_exact_train_match
+234,1411,I have no preference but can I get a phone number to one of them,i have no preference but can i get a phone number to one of them,1,,False,0,,,no_exact_train_match
+235,1068,I need help with optimizing optimizing the way I communicate with you so that,i need help with optimizing optimizing the way i communicate with you so that,0,,False,0,,,no_exact_train_match
+236,290,could you help me find the file that has the uh you know the one with all the um,could you help me find the file that has the uh you know the one with all the um,0,,False,0,,,no_exact_train_match
+237,1247,Not my problem,not my problem,1,,False,0,,,no_exact_train_match
+238,1402,I started taking notes but then the presentation just kind of,i started taking notes but then the presentation just kind of,0,,False,0,,,no_exact_train_match
+239,1393,"I'm not sure if we should-- I checked, and we definitely need graphing paper","i'm not sure if we should-- i checked, and we definitely need graphing paper",1,,False,0,,,no_exact_train_match
+240,359,"The repository name is project-alpha- correction, project-beta main","the repository name is project-alpha- correction, project-beta main",1,,False,0,,,no_exact_train_match
+241,1663,"Actually, I'm in the mood for Cantonese food. Are there any like that","actually, i'm in the mood for cantonese food. are there any like that",0,,False,0,,,no_exact_train_match
+242,1117,"I need to update my payment method, my expired payment method please","i need to update my payment method, my expired payment method please",1,,False,0,,,no_exact_train_match
+243,1465,the board of directors approved I already heard our proposal for international expansion,the board of directors approved i already heard our proposal for international expansion,1,,False,0,,,no_exact_train_match
+244,82,Invoice #RT-789 shows a balance of,invoice #rt-789 shows a balance of,0,,False,0,,,no_exact_train_match
+245,47,Either one is fine. I need to book it for 5 nights on Wednesday. There are 4 people,either one is fine. i need to book it for 5 nights on wednesday. there are 4 people,1,,False,0,,,no_exact_train_match
+246,980,Who's handling the presentation? The quarterly presentation next week,who's handling the presentation? the quarterly presentation next week,1,,False,0,,,no_exact_train_match
+247,150,oh yeah she definitely said the meeting starts at nine oclock sharp,oh yeah she definitely said the meeting starts at nine oclock sharp,1,,False,0,,,no_exact_train_match
+248,767,"Right right, just like in that training video we watched","right right, just like in that training video we watched",1,1,False,1,750,1,diagnostic_only_count_lt_2
+249,1216,can someone explain why the oh i found the documentation in the wiki,can someone explain why the oh i found the documentation in the wiki,1,,False,0,,,no_exact_train_match
+250,499,"Hey, remember that time when we were all at the beach and","hey, remember that time when we were all at the beach and",0,,False,0,,,no_exact_train_match
+251,931,"no, thank you","no, thank you",1,,False,0,,,no_exact_train_match
+252,389,ah man I cant believe how quickly this semester went by,ah man i cant believe how quickly this semester went by,1,,False,0,,,no_exact_train_match
+253,256,dawg when I tell you this food was hittin but then my stomach started,dawg when i tell you this food was hittin but then my stomach started,0,,False,0,,,no_exact_train_match
+254,822,and wondering if Thursday,and wondering if thursday,0,,False,0,,,no_exact_train_match
+255,350,The new feature implementation requires us to uh let me think about,the new feature implementation requires us to uh let me think about,0,,False,0,,,no_exact_train_match
+256,478,"Well honestly, I think the blue paint looks better in this lighting","well honestly, i think the blue paint looks better in this lighting",1,,False,0,,,no_exact_train_match
+257,155,no thanks doesnt help me,no thanks doesnt help me,1,,False,0,,,no_exact_train_match
+258,462,id be staying for 3 nights,id be staying for 3 nights,1,,False,0,,,no_exact_train_match
+259,1282,"Could you take a look at how the-- well, the way that it seems to","could you take a look at how the-- well, the way that it seems to",0,,False,0,,,no_exact_train_match
+260,632,cmere and lemme show ya sumthin bout the,cmere and lemme show ya sumthin bout the,0,,False,0,,,no_exact_train_match
+261,132,Aisle have to check the male for the confirmation code,aisle have to check the male for the confirmation code,1,,False,0,,,no_exact_train_match
+262,1863,You remember the previous implementation dont you when we had to,you remember the previous implementation dont you when we had to,0,,False,0,,,no_exact_train_match
+263,1849,"We're supposed to submit the report by noon, right","we're supposed to submit the report by noon, right",1,,False,0,,,no_exact_train_match
+264,1439,Do we need to bring our own-- the equipment's provided by the facility,do we need to bring our own-- the equipment's provided by the facility,1,,False,0,,,no_exact_train_match
+265,1026,"The cluster is scaling, automatically scaling due to high traffic","the cluster is scaling, automatically scaling due to high traffic",1,,False,0,,,no_exact_train_match
+266,274,ion even know why we switched frameworks when the old one was,ion even know why we switched frameworks when the old one was,0,,False,0,,,no_exact_train_match
+267,582,coulda sworn i put my wallet right here on the table,coulda sworn i put my wallet right here on the table,1,,False,0,,,no_exact_train_match
+268,756,"Mmkay, so if I'm following what you're saying about the","mmkay, so if i'm following what you're saying about the",0,0,False,1,749,0,diagnostic_only_count_lt_2
+269,630,coulda been worse if ya think bout how they,coulda been worse if ya think bout how they,0,,False,0,,,no_exact_train_match
+270,1974,when we got there,when we got there,1,,False,0,,,no_exact_train_match
+271,1046,I'm getting these warnings these warnings in the console whenever,i'm getting these warnings these warnings in the console whenever,0,,False,0,,,no_exact_train_match
+272,1293,They were explaining the process but then the workflow seemed to,they were explaining the process but then the workflow seemed to,0,,False,0,,,no_exact_train_match
+273,355,"Contact support at extension 4321- no, 4312 for assistance","contact support at extension 4321- no, 4312 for assistance",1,,False,0,,,no_exact_train_match
+274,1047,The kubernetes cluster the cluster configuration where we,the kubernetes cluster the cluster configuration where we,0,,False,0,,,no_exact_train_match
+275,507,I'ma tell you sumthin that'll make ya laugh so hard,i'ma tell you sumthin that'll make ya laugh so hard,1,,False,0,,,no_exact_train_match
+276,1295,Should we consider implementing the-- I mean if we look at how the,should we consider implementing the-- i mean if we look at how the,0,,False,0,,,no_exact_train_match
+277,1262,the team was wondering if we could maybe depending on how the,the team was wondering if we could maybe depending on how the,0,,False,0,,,no_exact_train_match
+278,540,Ya'll wanna come wit us to the movies tonight,ya'll wanna come wit us to the movies tonight,1,,False,0,,,no_exact_train_match
+279,381,hey listen I really appreciate you helping me move into my new apartment,hey listen i really appreciate you helping me move into my new apartment,1,,False,0,,,no_exact_train_match
+280,1039,Could you look at my code my code in the pull request that,could you look at my code my code in the pull request that,0,,False,0,,,no_exact_train_match
+281,928,the team was working on the project on the project that would,the team was working on the project on the project that would,0,,False,0,,,no_exact_train_match
+282,1992,the blue one,the blue one,1,,False,0,,,no_exact_train_match
+283,5,I'm also looking for a cheap Chinese place to eat at,i'm also looking for a cheap chinese place to eat at,0,,False,0,,,no_exact_train_match
+284,148,oh yeah I remember when we used to,oh yeah i remember when we used to,0,,False,0,,,no_exact_train_match
+285,1475,we need to implement the new security protocols right but wait across all our systems by next month,we need to implement the new security protocols right but wait across all our systems by next month,1,,False,0,,,no_exact_train_match
+286,884,mans really said shukran and dipped before anyone could,mans really said shukran and dipped before anyone could,0,,False,0,,,no_exact_train_match
+287,1075,"Hey AI, can you switch to code mode - you know, code generation mode please","hey ai, can you switch to code mode - you know, code generation mode please",1,,False,0,,,no_exact_train_match
+288,1486,our statistical analysis demonstrates let me interrupt clear correlation between these variables,our statistical analysis demonstrates let me interrupt clear correlation between these variables,1,,False,0,,,no_exact_train_match
+289,1113,The confirmation email the confirmation email that was supposed to,the confirmation email the confirmation email that was supposed to,0,,False,0,,,no_exact_train_match
+290,1630,"Anything that you recommend, I'm new to the town","anything that you recommend, i'm new to the town",1,,False,0,,,no_exact_train_match
+291,169,they completely ruined my favorite book series with that terrible ending,they completely ruined my favorite book series with that terrible ending,1,,False,0,,,no_exact_train_match
+292,1869,The client approved the design didnt they though there's still,the client approved the design didnt they though there's still,0,,False,0,,,no_exact_train_match
+293,1161,the problem with the i found out the database backup completed successfully last night,the problem with the i found out the database backup completed successfully last night,1,,False,0,,,no_exact_train_match
+294,481,I also need a hotel room,i also need a hotel room,1,,False,0,,,no_exact_train_match
+295,857,Yes please. Get me the address,yes please. get me the address,1,,False,0,,,no_exact_train_match
+296,695,"Hotel is nearby that corner, so you can start from","hotel is nearby that corner, so you can start from",0,,False,0,,,no_exact_train_match
+297,10,What if traffic is,what if traffic is,0,,False,0,,,no_exact_train_match
+298,986,"We need to validate these numbers, these conversion numbers specifically","we need to validate these numbers, these conversion numbers specifically",1,,False,0,,,no_exact_train_match
+299,1717,I've updated the documentation with the latest API changes,i've updated the documentation with the latest api changes,1,,False,0,,,no_exact_train_match
+300,1025,"They forgot my side dish, my side of sweet potato fries","they forgot my side dish, my side of sweet potato fries",1,,False,0,,,no_exact_train_match
+301,433,"Thank you for your help, that is all I need today","thank you for your help, that is all i need today",1,,False,0,,,no_exact_train_match
+302,471,"Wow, can you believe they actually finished the construction ahead of schedule","wow, can you believe they actually finished the construction ahead of schedule",1,,False,0,,,no_exact_train_match
+303,1069,When I ask for creative solutions creative solutions you tend to,when i ask for creative solutions creative solutions you tend to,0,,False,0,,,no_exact_train_match
+304,13,"I'm looking at train schedules from Cambridge to Birmingham, and was wondering about","i'm looking at train schedules from cambridge to birmingham, and was wondering about",0,,False,0,,,no_exact_train_match
+305,241,I'm looking for an indonesian restaurant that's moderate in price,i'm looking for an indonesian restaurant that's moderate in price,1,,False,0,,,no_exact_train_match
+306,681,yep yep and then when they started talking bout,yep yep and then when they started talking bout,0,,False,0,,,no_exact_train_match
+307,1771,looking at the test results wouldnt you rather,looking at the test results wouldnt you rather,0,,False,0,,,no_exact_train_match
+308,91,"Are there any chinese restaurants on the east side of town? If so, what is the address, phone number and post code","are there any chinese restaurants on the east side of town? if so, what is the address, phone number and post code",1,,False,0,,,no_exact_train_match
+309,1298,The team suggested we might want to-- but then again when you think,the team suggested we might want to-- but then again when you think,0,,False,0,,,no_exact_train_match
+310,1613,Device battery level is at 15% and needs charging immediately,device battery level is at 15% and needs charging immediately,1,,False,0,,,no_exact_train_match
+311,904,can you check my reservation my hotel reservation for next Tuesday,can you check my reservation my hotel reservation for next tuesday,1,,False,0,,,no_exact_train_match
+312,901,can you tell me where the meeting where the uh the meeting,can you tell me where the meeting where the uh the meeting,0,,False,0,,,no_exact_train_match
+313,195,Is it a 4 star place,is it a 4 star place,1,,False,0,,,no_exact_train_match
+314,351,We should probably consider updating the uh what's that framework called,we should probably consider updating the uh what's that framework called,0,,False,0,,,no_exact_train_match
+315,1552,I will travel on Thursday. Anything you need,i will travel on thursday. anything you need,1,,False,0,,,no_exact_train_match
+316,962,"We discussed this yesterday, we definitely discussed this in the standup","we discussed this yesterday, we definitely discussed this in the standup",1,,False,0,,,no_exact_train_match
+317,843,my jija says dekho dekho whenever he wants to show something,my jija says dekho dekho whenever he wants to show something,0,,False,0,,,no_exact_train_match
+318,1925,the new policy takes effect next month doesnt it,the new policy takes effect next month doesnt it,1,,False,0,,,no_exact_train_match
+319,11,I prefer to stay in a moderate area,i prefer to stay in a moderate area,1,,False,0,,,no_exact_train_match
+320,1525,the construction project should finish ... before the holiday season begins,the construction project should finish... before the holiday season begins,1,,False,0,,,no_exact_train_match
+321,1063,Can I substitute the rice? The white rice for brown rice instead,can i substitute the rice? the white rice for brown rice instead,1,,False,0,,,no_exact_train_match
+322,464,"Hmm, well considering the circumstances, I think we made the right choice","hmm, well considering the circumstances, i think we made the right choice",1,,False,0,,,no_exact_train_match
+323,149,ight now Im sitting in my car outside the grocery store,ight now im sitting in my car outside the grocery store,1,,False,0,,,no_exact_train_match
+324,1922,we could start the project now couldnt we if we just,we could start the project now couldnt we if we just,0,,False,0,,,no_exact_train_match
+325,1730,still wondering about that other question and,still wondering about that other question and,0,,False,0,,,no_exact_train_match
+326,1949,you cant seriously expect me to believe that can you,you cant seriously expect me to believe that can you,1,,False,0,,,no_exact_train_match
+327,244,"The, the new coffee shop downtown is, is absolutely amazing, best lattes ever","the, the new coffee shop downtown is, is absolutely amazing, best lattes ever",1,,False,0,,,no_exact_train_match
+328,1928,where did everyone save those files from the presentation that we,where did everyone save those files from the presentation that we,0,,False,0,,,no_exact_train_match
+329,897,heh you really thought you could beat me,heh you really thought you could beat me,1,,False,0,,,no_exact_train_match
+330,547,"Nope, I just need the entrance fee, phone number, and address of your favorite one","nope, i just need the entrance fee, phone number, and address of your favorite one",1,,False,0,,,no_exact_train_match
+331,360,Hmm.. how about 12:15,hmm.. how about 12:15,1,,False,0,,,no_exact_train_match
+332,519,Lemme tell ya bout what happened at work yesterday,lemme tell ya bout what happened at work yesterday,1,,False,0,,,no_exact_train_match
+333,192,The washing machine is broken again i cant wait for my vacation next,the washing machine is broken again i cant wait for my vacation next,1,,False,0,,,no_exact_train_match
+334,365,The user permissions should be set to allow uh which level was it,the user permissions should be set to allow uh which level was it,0,,False,0,,,no_exact_train_match
+335,760,"Mmhm, that's precisely why I suggested the changes","mmhm, that's precisely why i suggested the changes",1,1,False,1,738,1,diagnostic_only_count_lt_2
+336,255,From Kings lynn train station,from kings lynn train station,1,,False,0,,,no_exact_train_match
+337,844,my lolo was telling me anak you should always remember how,my lolo was telling me anak you should always remember how,0,,False,0,,,no_exact_train_match
+338,579,mighta been better if we went to the other restaurant,mighta been better if we went to the other restaurant,1,,False,0,,,no_exact_train_match
+339,1761,Thanks now I need a taxi leaving the hotel by 23:30 going to the theatre,thanks now i need a taxi leaving the hotel by 23:30 going to the theatre,1,,False,0,,,no_exact_train_match
+340,1083,Could you analyze this prompt? This complex prompt I've constructed,could you analyze this prompt? this complex prompt i've constructed,1,,False,0,,,no_exact_train_match
+341,1670,"Around $10, but I'm not sure if I want a clear case or something with a","around $10, but i'm not sure if i want a clear case or something with a",0,,False,0,,,no_exact_train_match
+342,356,"It's a loop that's supposed to iterate over a list, but it's not working as","it's a loop that's supposed to iterate over a list, but it's not working as",0,,False,0,,,no_exact_train_match
+343,1951,you remember Sarah from accounting dont you she was the one who,you remember sarah from accounting dont you she was the one who,0,,False,0,,,no_exact_train_match
+344,1035,Is the steak - the medium-rare steak - still available tonight,is the steak - the medium-rare steak - still available tonight,1,,False,0,,,no_exact_train_match
+345,397,er well the thing is when you mentioned about the,er well the thing is when you mentioned about the,0,,False,0,,,no_exact_train_match
+346,691,mm yeah yeah so when youre talking bout how the,mm yeah yeah so when youre talking bout how the,0,,False,0,,,no_exact_train_match
+347,587,gonna need some help movin all these boxes upstairs,gonna need some help movin all these boxes upstairs,1,,False,0,,,no_exact_train_match
+348,137,"That is all I need I will be on my way, tootles","that is all i need i will be on my way, tootles",1,,False,0,,,no_exact_train_match
+349,109,considering the train schedule for monday and wondering if there's a,considering the train schedule for monday and wondering if there's a,0,,False,0,,,no_exact_train_match
+350,1447,The team bus was supposed to-- they updated departure to 07:45 UTC,the team bus was supposed to-- they updated departure to 07:45 utc,1,,False,0,,,no_exact_train_match
+351,935,booking one night at the avalon hotel would be and then somehow,booking one night at the avalon hotel would be and then somehow,0,,False,0,,,no_exact_train_match
+352,1201,could you check if the system is i ran the diagnostics everything passed,could you check if the system is i ran the diagnostics everything passed,1,1,False,1,1249,1,diagnostic_only_count_lt_2
+353,314,No thank you. That's all I need for now,no thank you. that's all i need for now,1,,False,0,,,no_exact_train_match
+354,1878,"They've fixed all the major bugs already, haven't they","they've fixed all the major bugs already, haven't they",1,,False,0,,,no_exact_train_match
+355,1568,considering another hotel in the same pricerange and maybe something like,considering another hotel in the same pricerange and maybe something like,0,,False,0,,,no_exact_train_match
+356,1134,Could you resend the confirmation? The order confirmation email please,could you resend the confirmation? the order confirmation email please,1,,False,0,,,no_exact_train_match
+357,181,my old phone broke down last week and honestly this new one takes much better photos of my garden,my old phone broke down last week and honestly this new one takes much better photos of my garden,1,,False,0,,,no_exact_train_match
+358,41,I'm looking for a train headed to Cambridge,i'm looking for a train headed to cambridge,1,,False,0,,,no_exact_train_match
+359,342,When you initialize the database you need to make sure that um hold on,when you initialize the database you need to make sure that um hold on,0,,False,0,,,no_exact_train_match
+360,1618,Room 507 is booked from 2:00 PM to 4:30 PM tomorrow,room 507 is booked from 2:00 pm to 4:30 pm tomorrow,1,,False,0,,,no_exact_train_match
+361,206,this this restaurant they they always mess up my order i i cant stand going there anymore,this this restaurant they they always mess up my order i i cant stand going there anymore,1,,False,0,,,no_exact_train_match
+362,1724,The client approved our proposal for the mobile app redesign,the client approved our proposal for the mobile app redesign,1,,False,0,,,no_exact_train_match
+363,487,bye everyone but did anyone see where those,bye everyone but did anyone see where those,0,,False,0,,,no_exact_train_match
+364,1753,We should consider adding more testing phases to our workflow,we should consider adding more testing phases to our workflow,1,,False,0,,,no_exact_train_match
+365,262,the way this project been stressin me out like I cant even with these,the way this project been stressin me out like i cant even with these,0,,False,0,,,no_exact_train_match
+366,976,The client approved the design - the FINAL design we sent yesterday,the client approved the design - the final design we sent yesterday,1,,False,0,,,no_exact_train_match
+367,592,lemme think bout how they was tryna explain the,lemme think bout how they was tryna explain the,0,,False,0,,,no_exact_train_match
+368,468,"Ugh, don't even get me started on how the whole situation with","ugh, don't even get me started on how the whole situation with",0,,False,0,,,no_exact_train_match
+369,606,Is there a gastropub in that area instead,is there a gastropub in that area instead,0,,False,0,,,no_exact_train_match
+370,1267,"Should we schedule the meeting for-- perfect, I see you've booked it for March 15th","should we schedule the meeting for-- perfect, i see you've booked it for march 15th",1,,False,0,,,no_exact_train_match
+371,1194,i wanted to ask about the project timeline but then i thought maybe we should,i wanted to ask about the project timeline but then i thought maybe we should,0,,False,0,,,no_exact_train_match
+372,1297,"yes, if it has a three star rating","yes, if it has a three star rating",1,,False,0,,,no_exact_train_match
+373,476,"Please make sure to submit your expense reports for the London conference by next Friday, and don't forget to include all receipts","please make sure to submit your expense reports for the london conference by next friday, and don't forget to include all receipts",1,,False,0,,,no_exact_train_match
+374,1004,"We should sync with APAC, sync with the Singapore team tomorrow","we should sync with apac, sync with the singapore team tomorrow",1,,False,0,,,no_exact_train_match
+375,1910,they should arrive soon shouldnt they assuming that,they should arrive soon shouldnt they assuming that,0,,False,0,,,no_exact_train_match
+376,866,mans really pulled up saying assalamu alaikum and then,mans really pulled up saying assalamu alaikum and then,0,,False,0,,,no_exact_train_match
+377,819,she really said gracias amor and dipped from the function,she really said gracias amor and dipped from the function,0,,False,0,,,no_exact_train_match
+378,266,"Yo, the way this code review is dragging on and nobody's even addressing the main","yo, the way this code review is dragging on and nobody's even addressing the main",0,,False,0,,,no_exact_train_match
+379,1933,thinking about the party size and whether to include,thinking about the party size and whether to include,0,,False,0,,,no_exact_train_match
+380,1038,I'd like the pasta - the SPICY pasta with shrimp please,i'd like the pasta - the spicy pasta with shrimp please,1,,False,0,,,no_exact_train_match
+381,1229,the database seems to be having some i restarted the server its working fine,the database seems to be having some i restarted the server its working fine,1,,False,0,,,no_exact_train_match
+382,643,going to the restaurant at,going to the restaurant at,0,,False,0,,,no_exact_train_match
+383,1566,before we implement the changes we should probably ... especially considering,before we implement the changes we should probably... especially considering,0,,False,0,,,no_exact_train_match
+384,1991,looking at the,looking at the,0,,False,0,,,no_exact_train_match
+385,180,the weather ruined our beach plans so we had an amazing indoor picnic with board games instead,the weather ruined our beach plans so we had an amazing indoor picnic with board games instead,1,,False,0,,,no_exact_train_match
+386,1883,going to Don Pasquale and I need to figure out the best route but,going to don pasquale and i need to figure out the best route but,0,,False,0,,,no_exact_train_match
+387,1059,"We ordered takeout, takeout for pickup at 6:30PM tonight","we ordered takeout, takeout for pickup at 6:30pm tonight",1,,False,0,,,no_exact_train_match
+388,1352,"Should we ask the professor about-- wait, it's explained in the syllabus now","should we ask the professor about-- wait, it's explained in the syllabus now",1,,False,0,,,no_exact_train_match
+389,1694,The center of town would be best,the center of town would be best,0,,False,0,,,no_exact_train_match
+390,466,"Well actually, if you think about what Sarah said regarding the","well actually, if you think about what sarah said regarding the",0,,False,0,,,no_exact_train_match
+391,197,"Thanks, can I also have the phone number and postcode","thanks, can i also have the phone number and postcode",1,,False,0,,,no_exact_train_match
+392,1037,They're migrating the database the database where we keep all the,they're migrating the database the database where we keep all the,0,,False,0,,,no_exact_train_match
+393,1098,I submitted my request my support request three days ago but,i submitted my request my support request three days ago but,0,,False,0,,,no_exact_train_match
+394,1056,I'm working on that analysis that analysis about the market,i'm working on that analysis that analysis about the market,1,,False,0,,,no_exact_train_match
+395,1985,from the grocery store,from the grocery store,1,1,False,1,1961,1,diagnostic_only_count_lt_2
+396,1285,"Do you think we should wait for-- no, I confirm all stakeholders have responded","do you think we should wait for-- no, i confirm all stakeholders have responded",1,,False,0,,,no_exact_train_match
+397,119,"I would like to find a hotel, preferable one that is moderately priced","i would like to find a hotel, preferable one that is moderately priced",1,,False,0,,,no_exact_train_match
+398,1422,"yeah, i need a taxi to get me from the hotel to the restaurant","yeah, i need a taxi to get me from the hotel to the restaurant",1,,False,0,,,no_exact_train_match
+399,1116,Can we process an exchange? An immediate exchange for the damaged item,can we process an exchange? an immediate exchange for the damaged item,1,,False,0,,,no_exact_train_match
+400,80,Please enter your 6-digit code starting with 45,please enter your 6-digit code starting with 45,1,,False,0,,,no_exact_train_match
+401,526,Somethin bout the way they was talkin made me think,somethin bout the way they was talkin made me think,0,,False,0,,,no_exact_train_match
+402,921,my password stopped working it stopped working right after the system update,my password stopped working it stopped working right after the system update,1,,False,0,,,no_exact_train_match
+403,1164,im thinking we should probably revise the whole thing because when i look at,im thinking we should probably revise the whole thing because when i look at,0,,False,0,,,no_exact_train_match
+404,204,the the new system is is making me feel really really frustrated because whenever i,the the new system is is making me feel really really frustrated because whenever i,0,,False,0,,,no_exact_train_match
+405,1344,"My childhood friend keeps trying to-- ah, she finally reached out on Instagram","my childhood friend keeps trying to-- ah, she finally reached out on instagram",1,,False,0,,,no_exact_train_match
+406,1284,What is the price of the ticket and departure time,what is the price of the ticket and departure time,1,,False,0,,,no_exact_train_match
+407,877,that sounds really,that sounds really,0,,False,0,,,no_exact_train_match
+408,1286,The client mentioned they wanted to-- unless we should maybe,the client mentioned they wanted to-- unless we should maybe,0,,False,0,,,no_exact_train_match
+409,248,so like when he pulled up in that whip and started actin all,so like when he pulled up in that whip and started actin all,0,,False,0,,,no_exact_train_match
+410,575,imma head to the store bout now since its still open,imma head to the store bout now since its still open,1,,False,0,,,no_exact_train_match
+411,810,I need to get my vida together porque this ain't working anymore,i need to get my vida together porque this ain't working anymore,1,,False,0,,,no_exact_train_match
+412,1600,"That should work, what is the travel time on that","that should work, what is the travel time on that",0,,False,0,,,no_exact_train_match
+413,1171,she mentioned something about the i confirmed the conference room is booked,she mentioned something about the i confirmed the conference room is booked,1,,False,0,,,no_exact_train_match
+414,458,"Um, so about what happened at the meeting yesterday when Jim","um, so about what happened at the meeting yesterday when jim",0,,False,0,,,no_exact_train_match
+415,865,bro wallahi i was boutta explain until the whole thing,bro wallahi i was boutta explain until the whole thing,0,,False,0,,,no_exact_train_match
+416,1182,we should consider how to im going to schedule the planning session for monday,we should consider how to im going to schedule the planning session for monday,1,,False,0,,,no_exact_train_match
+417,1572,"Try just 1 night, then","try just 1 night, then",0,,False,0,,,no_exact_train_match
+418,1408,Of course. Can you tell me the address and entrance fee please,of course. can you tell me the address and entrance fee please,1,,False,0,,,no_exact_train_match
+419,1148,Is the car going to be ready by,is the car going to be ready by,0,,False,0,,,no_exact_train_match
+420,104,"Hi there, I need to know where I can find the Parkside Police Station","hi there, i need to know where i can find the parkside police station",1,,False,0,,,no_exact_train_match
+421,1543,how many people are we expecting for dinner tonight,how many people are we expecting for dinner tonight,1,,False,0,,,no_exact_train_match
+422,1176,The Rajmahal please,the rajmahal please,1,,False,0,,,no_exact_train_match
+423,520,Imma hafta go to the store real quick for some groceries,imma hafta go to the store real quick for some groceries,1,,False,0,,,no_exact_train_match
+424,423,thank you team for reviewing those files that we,thank you team for reviewing those files that we,0,,False,0,,,no_exact_train_match
+425,1472,um so regarding those changes we discussed during yesterdays call I was wondering if you might be able to explain why the team,um so regarding those changes we discussed during yesterdays call i was wondering if you might be able to explain why the team,0,,False,0,,,no_exact_train_match
+426,479,Phew! That presentation went way better than I expected it would,phew! that presentation went way better than i expected it would,0,,False,0,,,no_exact_train_match
+427,1388,Flight AC419 will depart at 3:45 PM from Gate B7,flight ac419 will depart at 3:45 pm from gate b7,1,,False,0,,,no_exact_train_match
+428,968,Mark's team - I mean Mark's WHOLE team - will be there tomorrow,mark's team - i mean mark's whole team - will be there tomorrow,1,,False,0,,,no_exact_train_match
+429,1484,students who participate in extracurricular activities mine dont tend to perform better academically,students who participate in extracurricular activities mine dont tend to perform better academically,1,,False,0,,,no_exact_train_match
+430,1109,The tracking number you provided the tracking number for my package isn't,the tracking number you provided the tracking number for my package isn't,0,,False,0,,,no_exact_train_match
+431,87,distance showing 234 miles from,distance showing 234 miles from,0,,False,0,,,no_exact_train_match
+432,1902,"I KNOW you've seen this movie before, haven't you","i know you've seen this movie before, haven't you",1,,False,0,,,no_exact_train_match
+433,1373,The chemistry lab report should-- I see it's already been graded online,the chemistry lab report should-- i see it's already been graded online,1,,False,0,,,no_exact_train_match
+434,1546,when you consider all the factors involved with ... and how that might affect,when you consider all the factors involved with... and how that might affect,0,,False,0,,,no_exact_train_match
+435,1490,remote work policies increase not in our case employee satisfaction and retention,remote work policies increase not in our case employee satisfaction and retention,1,,False,0,,,no_exact_train_match
+436,1049,Could you help me rephrase help me rephrase this prompt that I'm,could you help me rephrase help me rephrase this prompt that i'm,0,,False,0,,,no_exact_train_match
+437,948,your badge your security badge needs to be renewed next month,your badge your security badge needs to be renewed next month,1,,False,0,,,no_exact_train_match
+438,518,"Huh, that reminds me of that one time when we all","huh, that reminds me of that one time when we all",0,,False,0,,,no_exact_train_match
+439,1287,I'm trying to understand why the metrics are showing such unusual,i'm trying to understand why the metrics are showing such unusual,0,,False,0,,,no_exact_train_match
+440,1903,"You've seen the error logs, right, because there's something","you've seen the error logs, right, because there's something",0,,False,0,,,no_exact_train_match
+441,604,betcha didnt know that when i tried to,betcha didnt know that when i tried to,0,,False,0,,,no_exact_train_match
+442,245,"""I'm not, not sure how to feel about the changes because every time I","""i'm not, not sure how to feel about the changes because every time i",0,,False,0,,,no_exact_train_match
+443,1616,No. I just told you that I want the,no. i just told you that i want the,0,,False,0,,,no_exact_train_match
+444,615,I'd also like to book a taxi to go between the two. I'd like to leave Byard Art by 21:30,i'd also like to book a taxi to go between the two. i'd like to leave byard art by 21:30,1,,False,0,,,no_exact_train_match
+445,709,hmm yeah yeah that makes way more sense than before,hmm yeah yeah that makes way more sense than before,1,1,False,1,669,1,diagnostic_only_count_lt_2
+446,253,yall shoulda seen how this mans botched the presentation it was proper tragic,yall shoulda seen how this mans botched the presentation it was proper tragic,1,,False,0,,,no_exact_train_match
+447,1662,I've been trying to perfect this new recipe but the sauce keeps,i've been trying to perfect this new recipe but the sauce keeps,0,,False,0,,,no_exact_train_match
+448,326,"John's extension is 4455- I mean 4554, if you need to reach him","john's extension is 4455- i mean 4554, if you need to reach him",1,,False,0,,,no_exact_train_match
+449,549,Lemme see if I can member what they was sayin bout,lemme see if i can member what they was sayin bout,1,,False,0,,,no_exact_train_match
+450,453,aha now I understand why the printer keeps showing that error message,aha now i understand why the printer keeps showing that error message,1,,False,0,,,no_exact_train_match
+451,720,about the postcode for Thanh Binh and wondering if it's really cb30af or,about the postcode for thanh binh and wondering if it's really cb30af or,0,,False,0,,,no_exact_train_match
+452,1595,The conference room fits exactly 75 people at maximum capacity,the conference room fits exactly 75 people at maximum capacity,1,,False,0,,,no_exact_train_match
+453,563,signing off for today bye see you tomorrow,signing off for today bye see you tomorrow,1,,False,0,,,no_exact_train_match
+454,443,wow hold on I just remembered something about when we,wow hold on i just remembered something about when we,0,,False,0,,,no_exact_train_match
+455,1234,the team suggested we should i got confirmation from management to proceed,the team suggested we should i got confirmation from management to proceed,1,,False,0,,,no_exact_train_match
+456,53,"I was thinking about going to Byard Art, can you tell me the address and what the entrance fee is","i was thinking about going to byard art, can you tell me the address and what the entrance fee is",0,,False,0,,,no_exact_train_match
+457,581,"She likes music and art, but I'm not sure what to","she likes music and art, but i'm not sure what to",0,,False,0,,,no_exact_train_match
+458,1905,"Signing off, bye bye! Everything's set for tomorrow's meeting","signing off, bye bye! everything's set for tomorrow's meeting",1,,False,0,,,no_exact_train_match
+459,1147,could you help me understand why the reports are so i mean the way that they,could you help me understand why the reports are so i mean the way that they,0,,False,0,,,no_exact_train_match
+460,1544,the client mentioned something about ... and i wasnt quite sure if,the client mentioned something about... and i wasnt quite sure if,0,,False,0,,,no_exact_train_match
+461,840,I was going through it and she just says c'est la vie innit,i was going through it and she just says c'est la vie innit,1,,False,0,,,no_exact_train_match
+462,1682,We should probably look into why the system occasionally,we should probably look into why the system occasionally,0,,False,0,,,no_exact_train_match
+463,1596,Your refund of $89.50 has been processed successfully,your refund of $89.50 has been processed successfully,1,,False,0,,,no_exact_train_match
+464,151,uh hold on I need to check if,uh hold on i need to check if,0,,False,0,,,no_exact_train_match
+465,426,mm yeah this soup definitely needs more salt and maybe some pepper,mm yeah this soup definitely needs more salt and maybe some pepper,1,,False,0,,,no_exact_train_match
+466,826,At 12:45 please,at 12:45 please,1,,False,0,,,no_exact_train_match
+467,1231,we were thinking about changing the i already updated the configuration settings,we were thinking about changing the i already updated the configuration settings,1,,False,0,,,no_exact_train_match
+468,417,well actually according to the weather forecast it should snow tomorrow,well actually according to the weather forecast it should snow tomorrow,1,,False,0,,,no_exact_train_match
+469,1382,"Have you heard from our old-- yes, Maria just updated her contact information","have you heard from our old-- yes, maria just updated her contact information",1,,False,0,,,no_exact_train_match
+470,1789,"Nothing else today, thanks","nothing else today, thanks",1,,False,0,,,no_exact_train_match
+471,1982,not really but,not really but,0,,False,0,,,no_exact_train_match
+472,830,my lola keeps saying anak you need to study mas mahusay,my lola keeps saying anak you need to study mas mahusay,1,,False,0,,,no_exact_train_match
+473,852,I would like to stay in the moderate price range and I will need free parking,i would like to stay in the moderate price range and i will need free parking,1,,False,0,,,no_exact_train_match
+474,1788,regarding next weeks presentation wouldnt it be better if,regarding next weeks presentation wouldnt it be better if,0,,False,0,,,no_exact_train_match
+475,1966,thinking about how,thinking about how,0,,False,0,,,no_exact_train_match
+476,1508,these flowers only bloom in spring ... usually around the beginning of april,these flowers only bloom in spring... usually around the beginning of april,1,,False,0,,,no_exact_train_match
+477,229,can someone tell me if,can someone tell me if,0,,False,0,,,no_exact_train_match
+478,646,whatchu think bout maybe we could go and,whatchu think bout maybe we could go and,0,,False,0,,,no_exact_train_match
+479,1810,I am looking for a centrally located upscale restaurant,i am looking for a centrally located upscale restaurant,1,,False,0,,,no_exact_train_match
+480,1375,They suggested we should all get together but then everyone kind of,they suggested we should all get together but then everyone kind of,0,,False,0,,,no_exact_train_match
+481,56,No thanks. But I do need to book Leverton House for two nights starting on Tuesday. There are 5 in my party,no thanks. but i do need to book leverton house for two nights starting on tuesday. there are 5 in my party,1,,False,0,,,no_exact_train_match
+482,1919,the bus usually comes on time doesnt it,the bus usually comes on time doesnt it,1,,False,0,,,no_exact_train_match
+483,1219,the documentation seems to be missing some crucial well you know how sometimes,the documentation seems to be missing some crucial well you know how sometimes,0,,False,0,,,no_exact_train_match
+484,368,If we modify the configuration to include the um you know that thing where,if we modify the configuration to include the um you know that thing where,0,,False,0,,,no_exact_train_match
+485,1155,"Yes, book me any trip that is","yes, book me any trip that is",0,,False,0,,,no_exact_train_match
+486,1389,"The biology midterm might be-- according to Canvas, it's next Wednesday","the biology midterm might be-- according to canvas, it's next wednesday",1,,False,0,,,no_exact_train_match
+487,1489,the gallery's address is on,the gallery's address is on,0,,False,0,,,no_exact_train_match
+488,1678,Our community garden produced over fifty pounds of vegetables last season,our community garden produced over fifty pounds of vegetables last season,1,,False,0,,,no_exact_train_match
+489,1547,no actually I was just about to mention something about the way they,no actually i was just about to mention something about the way they,0,,False,0,,,no_exact_train_match
+490,1811,"You've tried that new sushi place downtown, haven't you","you've tried that new sushi place downtown, haven't you",1,,False,0,,,no_exact_train_match
+491,763,I think 19:35 would be,i think 19:35 would be,0,,False,0,,,no_exact_train_match
+492,394,That should be all thank you,that should be all thank you,1,,False,0,,,no_exact_train_match
+493,555,Imma tell ya what really happened when,imma tell ya what really happened when,0,,False,0,,,no_exact_train_match
+494,1920,"Not sure, maybe around","not sure, maybe around",0,,False,0,,,no_exact_train_match
+495,1651,"I am also looking for a restaurant in the centre of town. I'd like it to be moderate price range, please","i am also looking for a restaurant in the centre of town. i'd like it to be moderate price range, please",1,,False,0,,,no_exact_train_match
+496,1674,My sister's wedding is scheduled for June fifteenth this summer,my sister's wedding is scheduled for june fifteenth this summer,1,,False,0,,,no_exact_train_match
+497,55,um so the driver said something about extra charges for,um so the driver said something about extra charges for,0,,False,0,,,no_exact_train_match
+498,1437,"I couldn't find my sports-- nevermind, my gear's in the other locker","i couldn't find my sports-- nevermind, my gear's in the other locker",1,,False,0,,,no_exact_train_match
+499,663,mm yeah yeah that explains why everyone was upset,mm yeah yeah that explains why everyone was upset,1,1,False,1,702,1,diagnostic_only_count_lt_2
