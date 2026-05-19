@@ -1,9 +1,11 @@
-"""Reconstruct and compare strong Part 2 DistilBERT candidates.
+"""Reconstruct and compare historical Part 2 DistilBERT candidates.
 
 This helper keeps the notebook portable while making the late-stage model
 diagnostics reproducible. It never uses test labels and it never talks to
 Kaggle. Transformer loading is forced through local files only so a missing
-cache fails loudly instead of downloading a model.
+cache fails loudly instead of downloading a model. These diagnostics are not
+the final model selection; the final submitted Part 2 model is tuned
+RoBERTa-base seed 42 with OOF Macro-F1 0.968701 and Kaggle public score 0.9686.
 """
 
 from __future__ import annotations
@@ -80,7 +82,7 @@ class CandidateResult:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Ultimate Part 2 optimization diagnostics.")
+    parser = argparse.ArgumentParser(description="Historical DistilBERT diagnostics for Part 2; not final model selection.")
     parser.add_argument("--data-dir", type=Path, default=PART2_DIR)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--model-name", default="distilbert-base-uncased")

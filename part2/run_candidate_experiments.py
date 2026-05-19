@@ -3,7 +3,9 @@
 The notebook remains the submission artifact. This helper is intentionally
 portable back into the notebook: it uses the same train/test CSVs, Macro-F1,
 Stratified K-fold validation, Random Over-sampling, and cost-sensitive variants.
-Optional frozen DistilBERT features use only locally cached model files.
+Optional frozen DistilBERT features use only locally cached model files. These
+are diagnostic comparisons only; the final selected Part 2 model is tuned
+RoBERTa-base seed 42 with Kaggle public score 0.9686.
 """
 
 from __future__ import annotations
