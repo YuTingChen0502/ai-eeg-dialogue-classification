@@ -1,8 +1,9 @@
-"""Fine-tune a lightweight transformer for HW3 Part 2.
+"""Fine-tune the Part 2 transformer model.
 
 This script is intentionally separate from part2.ipynb so the stable
 classical notebook stays intact. It trains a binary sequence classifier,
-reports validation Macro-F1, and writes a Kaggle submission CSV.
+reports validation Macro-F1, and writes a Kaggle submission CSV. The default
+configuration matches the final selected RoBERTa-base seed 42 workflow.
 """
 
 from __future__ import annotations
@@ -22,7 +23,10 @@ from sklearn.model_selection import StratifiedKFold, train_test_split
 
 TEXT_COL_CANDIDATES = ("text", "content", "utterance", "sentence")
 CLASSICAL_TUNED_BASELINE = "0.8805 +/- 0.0262"
-BERT_HOLDOUT_BASELINE = 0.9329
+FINAL_MODEL_NAME = "roberta-base"
+FINAL_MODEL_OOF_MACRO_F1 = 0.968701
+FINAL_MODEL_PUBLIC_SCORE = 0.9686
+TRANSFORMER_HOLDOUT_BASELINE = 0.9329
 
 
 def require_transformer_deps():
@@ -54,16 +58,16 @@ def require_transformer_deps():
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Fine-tune DistilBERT for Part 2 dialogue continuity.")
+    parser = argparse.ArgumentParser(description="Fine-tune RoBERTa-base seed 42 for Part 2 dialogue continuity.")
     parser.add_argument("--data-dir", type=Path, default=Path(__file__).resolve().parent)
-    parser.add_argument("--model-name", default="distilbert-base-uncased")
+    parser.add_argument("--model-name", default=FINAL_MODEL_NAME)
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--max-length", type=int, default=128)
     parser.add_argument("--learning-rate", type=float, default=2e-5)
     parser.add_argument("--weight-decay", type=float, default=0.01)
-    parser.add_argument("--output-dir", type=Path, default=Path(__file__).resolve().parent / "outputs" / "bert")
-    parser.add_argument("--submission-path", type=Path, default=Path(__file__).resolve().parent / "submission_bert.csv")
+    parser.add_argument("--output-dir", type=Path, default=Path(__file__).resolve().parent / "outputs" / "roberta_seed42")
+    parser.add_argument("--submission-path", type=Path, default=Path(__file__).resolve().parent / "submission_roberta_seed42.csv")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--valid-size", type=float, default=0.2)
     parser.add_argument("--k-folds", type=int, default=0, help="Optional Stratified K-Fold CV. 0 disables CV.")
@@ -545,7 +549,8 @@ def main() -> None:
     else:
         print(f"Default threshold Macro-F1: {holdout_result['default_f1']:.4f} at threshold=0.50")
     print(report)
-    print(f"DistilBERT holdout baseline for comparison: {BERT_HOLDOUT_BASELINE:.4f}")
+    print(f"Final selected model: RoBERTa-base seed 42, OOF Macro-F1={FINAL_MODEL_OOF_MACRO_F1:.6f}, public={FINAL_MODEL_PUBLIC_SCORE:.4f}")
+    print(f"Historical transformer holdout baseline for comparison: {TRANSFORMER_HOLDOUT_BASELINE:.4f}")
     print(f"Classical tuned baseline for comparison: {CLASSICAL_TUNED_BASELINE}")
 
     threshold = holdout_result["threshold"] if args.threshold_tune else 0.5
@@ -566,8 +571,8 @@ def main() -> None:
         print("NOTE: Validation is clearly below the tuned classical baseline; upload only as an exploratory Kaggle probe.")
     elif best_f1 < 0.8805:
         print("NOTE: Validation is below the tuned classical baseline; compare carefully before merging.")
-    elif args.threshold_tune and holdout_result["threshold_f1"] > BERT_HOLDOUT_BASELINE:
-        print("NOTE: Threshold-tuned validation improves over the DistilBERT baseline; upload the threshold submission first.")
+    elif args.threshold_tune and holdout_result["threshold_f1"] > TRANSFORMER_HOLDOUT_BASELINE:
+        print("NOTE: Threshold-tuned validation improves over the historical transformer baseline; compare against the final RoBERTa seed 42 record before upload.")
     else:
         print("NOTE: Validation is competitive with the tuned classical baseline; worth a Kaggle public-score check.")
 
