@@ -313,7 +313,8 @@ For this part, please choose **the same training model** (TF-IDF + SVM / XGBoost
 ```python
 import pandas as pd
 
-def perform_balancing(df: pd.DataFrame, method: str = "random", random_state: int = 42) -pd.DataFrame:
+def perform_balancing(df: pd.DataFrame, method: str = "random",
+                        random_state: int = 42) -pd.DataFrame:
 if method == "none":
 return df.copy()
 
@@ -329,10 +330,13 @@ replace=True,
 random_state=random_state,
 )
 df_balanced = pd.concat([df_majority, df_minority_upsampled], axis=0)
-return df_balanced.sample(frac=1.0, random_state=random_state).reset_index(drop=True)
+return df_balanced.sample(frac=1.0, random_state=random_state)
+                            .reset_index(drop=True)
 ```
 
 此程式碼以「有放回抽樣」的方式複製少數類別樣本，直到少數類別的樣本數與多數類別相同，接著將平衡後的訓練集打亂。
+
+<div style="page-break-after: always;"></div>
 
 **Code Screenshot 2 - 進階平衡方法：cost-sensitive LinearSVC**
 
@@ -412,6 +416,8 @@ Random over-sampling 透過複製資料列來改變訓練資料；cost-sensitive
 
 Task1 Data Balancing 的最佳方法為 **no-balancing TF-IDF + LinearSVC baseline**。
 
+<div style="page-break-after: always;"></div>
+
 | 項目 | 值 |
 |---|---|
 | 方法 | No balancing baseline |
@@ -438,6 +444,8 @@ Note that you must at least implement one of the advanced models.
 
 
 我同時實作了傳統的 TF-IDF + SVM 模型，以及更進階的 RoBERTa 模型。截圖可由 `part2/scripts/classical_oof.py`、`part2/scripts/run_oof.py` 或對應檔案產生。
+
+<div style="page-break-after: always;"></div>
 
 **Code Screenshot 1 - TF-IDF + SVM baseline**
 
@@ -485,7 +493,8 @@ tokenizer = AutoTokenizer.from_pretrained("roberta-base")
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 oof_probs = np.zeros(len(train_df), dtype=np.float32)
 
-for fold_index, (train_idx, valid_idx) in enumerate(skf.split(train_df["text"], y)):
+for fold_index, (train_idx, valid_idx) in enumerate(skf.split(
+                                                    train_df["text"], y)):
 fold_train = train_df.iloc[train_idx].reset_index(drop=True)
 fold_valid = train_df.iloc[valid_idx].reset_index(drop=True)
 
@@ -494,8 +503,10 @@ model = AutoModelForSequenceClassification.from_pretrained(
 num_labels=2,
 ).float().to(device)
 
-train_ds = TextDataset(fold_train["text"], fold_train["label"], tokenizer, max_length=128)
-valid_ds = TextDataset(fold_valid["text"], fold_valid["label"], tokenizer, max_length=128)
+train_ds = TextDataset(fold_train["text"], fold_train["label"],
+ tokenizer, max_length=128)
+valid_ds = TextDataset(fold_valid["text"], fold_valid["label"],
+ tokenizer, max_length=128)
 train_loader = DataLoader(train_ds, batch_size=16, shuffle=True)
 valid_loader = DataLoader(valid_ds, batch_size=32, shuffle=False)
 
@@ -529,6 +540,7 @@ threshold_max=0.70,
 threshold_step=0.01,
 )
 ```
+<div style="page-break-after: always;"></div>
 
 此模型對預訓練的 RoBERTa 進行 fine-tuning 來執行二元序列分類。文字先經 tokenizer 進行 tokenization，接著由 RoBERTa 產生具上下文資訊的表示，最後由 classification head 預測 complete 或 incomplete。Threshold tuning 僅在 OOF validation 機率上進行。
 
@@ -571,6 +583,7 @@ Stacker OOF Macro-F1 = 0.9670
 ```
 
 因此最終並未選擇 stacker 模型。
+
 
 * **An explanation of the logic behind your chosen "Advanced Method."**
 
