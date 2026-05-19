@@ -1,7 +1,5 @@
 # Part 1 – Task 2: Cross-Subject EEG Motor Execution Classification
 
-> 用 10 位受試者的 EEG 訓練資料，預測一位沒看過的受試者的 trial 屬於哪一個運動類別（共 4 類：左手 / 右手 / 雙腳 / 休息）。
-
 ---
 
 ## 1. Method
@@ -15,11 +13,11 @@
 5. **Logistic Regression** 做分類，window 級的機率再對每個 trial 取平均
 6. **Confidence-gated 修正**：對主模型最不確定的 3 個 trial（信心 < 0.45），改用 EEGNet 3-seed ensemble 的預測
 
-### 為什麼選 Riemann 而不是純深度學習
+### 1.1 為什麼選 Riemann 而不是純深度學習
 
 訓練資料只有 320 trials（10 subject × 32 trials），對 CNN/Transformer 來說太少。我們有試 EEGNet + EA + Mixup（檔案 `train_dl.py`），但 LOSO val 只到 0.4688，比 Riemann + LR 的 0.5094 還差。文獻上 EEGNet 拿高分都是在 BCI Competition IV-2a（每位受試者 288 trials），我們只有 32 trials，深度模型沒辦法學到能 generalize 的特徵。
 
-### 程式檔案
+### 1.2 程式檔案
 
 | 檔案 | 用途 |
 |------|------|
@@ -30,13 +28,11 @@
 | `train_command.txt` | TA 用的單行訓練命令 |
 | `requirements.txt` | 相依：numpy / scipy / scikit-learn / pyriemann / joblib / torch |
 
-`inference.py` 預設產出 gated_k3（Public LB 0.8750）；加 `--gate-k 7` 可重現 gated_k7（也 0.8750，預測在 private LB 上略不同，是我們 Final 2 selection 的 hedge）。
+`inference.py` 預設產出 gated_k3（Public LB 0.8750）；加 `--gate-k 7` 可重現 gated_k7（也 0.8750，預測在 private LB 上略不同。
 
 ---
 
 ## 2. Preprocessing Design
-
-依 spec 要求，我們比較了不只 2 種預處理設計：
 
 | 設計 | 描述 | Kaggle Public LB |
 |------|------|-----------------|
@@ -48,18 +44,18 @@
 | **D** | Riemann + EA + **dense sliding**，broad (8–30 Hz)，ws=400/st=50 | **0.8125** |
 | **E** | D + **Confidence-Gated EEGNet** | **0.8750** ⭐ |
 
-### 哪個比較好、為什麼
+### 2.1 Design Comparasion
 
 設計 **E 最好**，原因分兩層：
 
-**為什麼 D 是最強單一模型**
+#### 2.1.1 **為什麼 D 是最強單一模型**
 
 1. **EA 是 cross-subject 的關鍵**：A 沒做 EA 直接掉到 0.25。EA 消除每個 subject 自己 covariance baseline 的差異（電極阻抗、頭皮厚度、注意力都不同），讓分類器專心學「class 區分」而不是「subject 區分」。
 2. **Broad band (8–30 Hz) 包含 mu (8–13) 和 beta (13–30) 兩個運動節律**，比單獨用 alpha 或 beta 多保留資訊。
 3. **Dense sliding (ws=400, st=50, 8 個 window)** 比 sparse (ws=500, st=100, 3 個 window) 的 TTA 平均更穩。
 4. **Multi-band ensemble (C) 反而退步**：alpha / beta / broad 在同一個 trial 上常常一起答錯，平均後沒辦法相互修正，反而把訊號稀釋。
 
-**為什麼 E 能超越 D**
+#### 2.1.2 **為什麼 E 能超越 D**
 
 5. D 的錯誤集中在它最低信心的 trial（信心 ≈ 0.40，差不多在亂猜），這些 trial 本來就最有可能答錯。
 6. 我們設計的 Confidence-Gated Ensemble 只在這些「D 沒把握」的 trial 上換成 EEGNet 的預測，**其他 29 個 D 有把握的 trial 完全不動**。這樣精準鎖定 D 的弱點，不冒險動 D 已經對的。
@@ -114,13 +110,11 @@
 
 ## 4. Analysis / Discussion
 
-依 spec 要求，這節回答 3 個 Task 2 specific 的問題，再加 bonus 部分。
-
 ### 4.1 我們怎麼處理 Cross-Subject 泛化
 
 主要靠 **Euclidean Alignment**。每位受試者的 EEG 都有自己的 baseline，沒對齊的話分類器會把「subject 的差異」當成「class 的差異」學進去，導致換 subject 就完全失效。
 
-數學上，對每個 subject 算一個 reference covariance R = (Σ x_i x_iᵀ / T) / N，然後對每個 trial 做白化 x_aligned = R^(−1/2) x。這樣對齊後每個 subject 的平均 covariance 都變成單位矩陣 I，subject-specific 的尺度、旋轉差異被消除。
+數學上，對每個 subject 算一個 reference covariance $R = \frac{\sum_{i=1}^{T} x_i x_i^T / T}{N}$，然後對每個 trial 做白化 $x_{\text{aligned}} = R^{-1/2} x$。這樣對齊後每個 subject 的平均 covariance 都變成單位矩陣 $\mathbb{I}$，subject-specific 的尺度、旋轉差異被消除。
 
 在 test 時，**test subject 用自己 32 個 trial 算自己的 reference**（unsupervised，不需要 label），用同樣公式對齊後丟進訓練好的 pipeline。
 
@@ -137,7 +131,7 @@
 | **MDM** (Minimum Distance to Mean) | ~0.78 | **LOSO 0.575 → Kaggle 0.31** | distance-based 對 covariance scale 敏感，新 subject 上崩盤 |
 | CSP + LDA | ~0.75 | LOSO 0.40 | CSP filter 是 per-subject 最佳化，平均到多 subject 會稀釋 |
 
-主要結論：cross-subject 的核心難題是 **distribution shift**，不是分類器能力不夠。沒先解決對齊問題，加再強的分類器都救不回來。一旦對齊好分布（EA 做完），即使是簡單的 Logistic Regression 也能跑到 0.8125。
+cross-subject 的核心難題是 **distribution shift**，不是分類器能力不夠。沒先解決對齊問題，加再強的分類器都救不回來。一旦對齊好分布（EA 做完），即使是簡單的 Logistic Regression 也能跑到 0.8125。
 
 ### 4.3 Local Validation 和 Public LB 的關係
 
@@ -154,7 +148,7 @@
 - Riemann broad_dense：LOSO 用 subject 10 當 hold-out，但 subject 10 是最難的 subject（val 0.375），所以 LOSO 數字偏低；Kaggle test subject 比較像「平均」subject，所以實際分數高很多。
 - MDM：LOSO 0.575 看起來最強，但其實 MDM 對訓練 fold 的 class mean 過擬合，新 subject 上完全崩盤。Kaggle 只有 0.31，比 random 還慘。
 
-**啟示**：對 N=10 subjects 的小資料，不能只用 LOSO 一個數字決定方法好壞。必須交叉看 public LB 才能確定。MDM 的例子就是 LOSO 騙我們的最好證據。
+因此，對 N=10 subjects 的小資料，不能只用 LOSO 一個數字決定方法好壞。必須交叉看 public LB 才能確定。MDM 的例子就是 LOSO 騙我們的最好證據。
 
 ### 4.4 Bonus：Confidence-Gated Ensemble（突破 0.8125 → 0.8750）
 
@@ -177,7 +171,7 @@ for i in lowest_k:
     predictions[i] = eegnet_ensemble.predict(x_test[i])
 ```
 
-**為什麼這合理**：broad_dense 信心 ~0.40 的 trial 等於是在亂猜（4-class random = 0.25），它本來就有很高機率答錯。讓「不同思路」的 EEGNet 接手是值得的。但對 broad_dense 信心 0.7 以上的 trial 我們不動，免得把對的翻錯。
+**合理性檢驗**：broad_dense 信心 ~0.40 的 trial 等於是在亂猜（4-class random = 0.25），它本來就有很高機率答錯。讓「不同思路」的 EEGNet 接手是值得的。但對 broad_dense 信心 0.7 以上的 trial 我們不動，免得把對的翻錯。
 
 **K 的選擇**：我們掃過 K = 3, 5, 7, 10, 14：
 
@@ -191,16 +185,6 @@ for i in lowest_k:
 
 甜蜜點在 **K ∈ [3, 7]**。K=10 開始把 broad_dense 對的 trial 也翻錯，K=14 整個 label 分布失衡。
 
-**這 +0.0625 的意義**：在 Kaggle public LB 上正好對應「+1 個 trial 答對」（13 → 14），驗證了我們的假設 — broad_dense 信心 0.40 的 trial 真的是它答錯的位置。
+**Kaggle Score +0.0625 的意義**：在 Kaggle public LB 上正好對應「+1 個 trial 答對」（13 → 14），驗證了我們的假設 — broad_dense 信心 0.40 的 trial 真的是它答錯的位置。
 
----
 
-## 5. 心得總結
-
-1. **EA 是 cross-subject 任務的決定性步驟**，沒做 EA 任何模型都跟 random 一樣（0.25）。
-2. **小資料 (320 trials) 下 Riemann + LR 反而比深度學習穩**：EEGNet 即使加了 EA + Mixup 還是不如 Riemann。
-3. **Uniform proba ensemble 在小資料常常失敗**，因為弱模型的錯誤跟強模型相關，平均沒效果反而拖累。
-4. **Confidence-Gated 比 uniform ensemble 聰明**：只在強模型不確定時引入第二意見，不冒險動它有把握的預測。這是我們 +0.0625 的關鍵。
-5. **LOSO CV 在小資料下不能單獨相信**，必須跟 public LB 交叉驗證。MDM (LOSO 0.575, Kaggle 0.31) 就是反例。
-
-最終 Kaggle public LB：**0.8750**（gated_k3 / gated_k7），對應 14 / 16 個 trial 正確。Final 2 兩個 submission 在 private LB 的 trial B 上預測不同，是我們留的 hedge。
