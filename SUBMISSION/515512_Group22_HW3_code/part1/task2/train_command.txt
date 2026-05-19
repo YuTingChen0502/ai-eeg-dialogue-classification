@@ -1,1 +1,8 @@
+# Step 1: Train all sub-models (Riemann broad_dense + 3 EEGNet seeds) and bundle into one checkpoint.
 python train.py --data data/train --output-dir outputs/task2_train --checkpoint outputs/task2_train/task2_model.pt --epochs 120 --batch-size 32 --learning-rate 0.0005 --weight-decay 0.0005 --seed 42 --num-workers 0 --device auto
+
+# Step 2: Inference with default gate-k=3 -> reproduces Kaggle submission_gated_k3 (Public LB 0.8750).
+python inference.py --data data --checkpoint outputs/task2_train/task2_model.pt --output submission_gated_k3.csv
+
+# Step 3: Inference with gate-k=7 -> reproduces Kaggle submission_gated_k7 (Public LB 0.8750).
+python inference.py --data data --checkpoint outputs/task2_train/task2_model.pt --gate-k 7 --output submission_gated_k7.csv
