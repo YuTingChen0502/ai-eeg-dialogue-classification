@@ -28,7 +28,7 @@ from typing import Iterable, Tuple
 import joblib
 import numpy as np
 
-from preprocess import (
+from SUBMISSION.task2_submission.preprocess import (
     PreprocessConfig,
     align_covs,
     apply_ea_whitening,
@@ -108,7 +108,7 @@ def proba_for_checkpoint(checkpoint_path: Path, x_raw: np.ndarray) -> np.ndarray
     if model_type == "eegnet_ea_mixup":
         # EEGNet: test-self EA whitening -> slide -> per-window z-score -> softmax.
         import torch
-        from model import EEGNet, ModelConfig
+        from SUBMISSION.task2_submission.model import EEGNet, ModelConfig
 
         whitening = compute_ea_whitening(x)
         x_aligned = apply_ea_whitening(x, whitening)

@@ -30,7 +30,7 @@ from typing import Iterable, Tuple
 import joblib
 import numpy as np
 
-from preprocess import (
+from SUBMISSION.task2_submission.preprocess import (
     PreprocessConfig,
     align_covs,
     apply_ea_whitening,
@@ -137,7 +137,7 @@ def _proba_eegnet_subckpt(sub_ckpt: dict, x_raw: np.ndarray) -> np.ndarray:
     Returns trial-level (N, n_classes) proba.
     """
     import torch
-    from model import EEGNet, ModelConfig
+    from SUBMISSION.task2_submission.model import EEGNet, ModelConfig
 
     pre_cfg = PreprocessConfig.from_dict(sub_ckpt["preprocess_cfg"])
     sliding_cfg = sub_ckpt.get("sliding_cfg", {"window_size": 500, "stride": 100})

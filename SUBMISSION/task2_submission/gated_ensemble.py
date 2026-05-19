@@ -28,7 +28,7 @@ import numpy as np
 
 # Reuse the proven helpers from ensemble_inference.py so the per-checkpoint
 # preprocessing / inference path is identical to the rest of the pipeline.
-from ensemble_inference import (
+from SUBMISSION.task2_submission.ensemble_inference import (
     load_test,
     proba_for_checkpoint,
     write_submission,
