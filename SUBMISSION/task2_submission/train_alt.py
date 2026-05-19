@@ -42,7 +42,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
-from preprocess import (
+from SUBMISSION.task2_submission.preprocess import (
     PreprocessConfig,
     align_covs,
     estimate_covs,

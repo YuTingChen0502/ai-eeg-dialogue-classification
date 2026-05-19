@@ -35,8 +35,8 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from model import EEGNet, ModelConfig
-from preprocess import (
+from SUBMISSION.task2_submission.model import EEGNet, ModelConfig
+from SUBMISSION.task2_submission.preprocess import (
     PreprocessConfig,
     apply_ea_whitening,
     compute_ea_whitening,

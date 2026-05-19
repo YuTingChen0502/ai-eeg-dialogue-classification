@@ -48,8 +48,8 @@ from pyriemann.tangentspace import TangentSpace
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
-from model import EEGNet, ModelConfig
-from preprocess import (
+from SUBMISSION.task2_submission.model import EEGNet, ModelConfig
+from SUBMISSION.task2_submission.preprocess import (
     PreprocessConfig,
     align_covs,
     apply_ea_whitening,
